@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>装维绩效反馈系统 - 员工端</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; background:#f0f4f8; color:#1f2937; min-height:100vh; }
+  .topbar { background:linear-gradient(135deg,#0f2b5b 0%,#1a4a8a 100%); color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
+  .topbar h1 { font-size:18px; font-weight:600; letter-spacing:1px; }
+  .topbar .sub { font-size:12px; opacity:.8; margin-top:2px; }
+  .topbar .logout { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; }
+  .container { max-width:680px; margin:0 auto; padding:16px; }
+  .card { background:#fff; border-radius:12px; box-shadow:0 1px 4px rgba(16,42,84,.08); padding:16px; margin-bottom:14px; }
+  .user-info { display:flex; justify-content:space-between; align-items:center; }
+  .user-info .name { font-size:17px; font-weight:600; color:#0d3b6e; }
+  .user-info .no { font-size:13px; color:#6b7280; }
+  .stat-row { display:flex; gap:8px; margin-bottom:14px; }
+  .stat { flex:1; background:#fff; border-radius:10px; padding:10px 6px; text-align:center; box-shadow:0 1px 3px rgba(16,42,84,.06); }
+  .stat .num { font-size:20px; font-weight:700; color:#0d3b6e; }
+  .stat .lab { font-size:12px; color:#6b7280; margin-top:2px; }
+  .card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .card-head .month { font-size:16px; font-weight:700; color:#111827; }
+  .total { font-size:22px; font-weight:800; color:#0d3b6e; margin-bottom:10px; }
+  .total small { font-size:12px; color:#6b7280; font-weight:400; margin-left:4px; }
+  .items { background:#f8fafc; border-radius:8px; padding:10px 12px; font-size:14px; line-height:1.9; color:#374151; }
+  .items .row { display:flex; justify-content:space-between; }
+  .items .row .k { color:#6b7280; }
+  .items .row .v { font-weight:600; color:#0f3b6e; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+  .b-pending { background:#e8f1fe; color:#1a5dc9; }
+  .b-confirmed { background:#e7f7ee; color:#14824c; }
+  .b-auto { background:#eef1f4; color:#64748b; }
+  .b-question { background:#fdecec; color:#d93c3c; }
+  .countdown { font-size:12px; color:#b45309; margin:8px 0 0; }
+  .actions { display:flex; gap:10px; margin-top:12px; }
+  .btn { flex:1; border:none; border-radius:8px; padding:10px 0; font-size:14px; font-weight:600; cursor:pointer; transition:opacity .2s; }
+  .btn:active { opacity:.75; }
+  .btn-confirm { background:#0d3b6e; color:#fff; }
+  .btn-question { background:#fff; color:#d93c3c; border:1px solid #f3b4b4; }
+  .btn-disabled { background:#e5e7eb; color:#9ca3af; cursor:not-allowed; }
+  .reply-box { background:#fff8f0; border-left:3px solid #f59e0b; border-radius:6px; padding:8px 12px; margin-top:10px; font-size:13px; color:#78350f; }
+  .empty { text-align:center; color:#9ca3af; padding:40px 0; font-size:14px; }
+  .footer { text-align:center; color:#9ca3af; font-size:12px; padding:18px 0 26px; }
+  /* 登录 */
+  .login-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(150deg,#0b2550 0%,#1a4a8a 55%,#2e6bb0 100%); padding:20px; }
+  .login-box { width:100%; max-width:380px; background:#fff; border-radius:16px; padding:30px 26px; box-shadow:0 18px 40px rgba(0,0,0,.25); }
+  .login-box .logo { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#0d3b6e,#2e6bb0); display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px; font-weight:800; margin-bottom:14px; }
+  .login-box h2 { font-size:19px; color:#0d3b6e; margin-bottom:4px; }
+  .login-box .tip { font-size:13px; color:#6b7280; margin-bottom:22px; }
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:13px; color:#374151; margin-bottom:6px; }
+  .field input { width:100%; padding:11px 12px; border:1px solid #d1d9e6; border-radius:9px; font-size:15px; outline:none; transition:border-color .2s; }
+  .field input:focus { border-color:#2e6bb0; }
+  .btn-login { width:100%; background:linear-gradient(135deg,#0d3b6e,#2563a8); color:#fff; border:none; border-radius:9px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer; margin-top:6px; }
+  .btn-login:active { opacity:.85; }
+  .err { color:#d93c3c; font-size:13px; margin-top:10px; display:none; }
+  .hint { font-size:12px; color:#9ca3af; text-align:center; margin-top:16px; line-height:1.7; }
+  /* 弹窗 */
+  .modal-mask { position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center; z-index:99; padding:20px; }
+  .modal { background:#fff; border-radius:14px; width:100%; max-width:400px; padding:22px; }
+  .modal h3 { font-size:16px; color:#111827; margin-bottom:12px; }
+  .modal textarea { width:100%; min-height:110px; border:1px solid #d1d9e3; border-radius:9px; padding:10px; font-size:14px; font-family:inherit; resize:vertical; outline:none; }
+  .modal .btns { display:flex; gap:10px; margin-top:14px; }
+  .modal .btns button { flex:1; padding:10px 0; border-radius:9px; font-size:14px; cursor:pointer; border:none; }
+  .modal .cancel { background:#f1f3f5; color:#374151; }
+  .modal .ok { background:#d93c3c; color:#fff; }
+  .toast { position:fixed; left:50%; bottom:40px; transform:translateX(-50%); background:rgba(17,24,39,.88); color:#fff; padding:9px 18px; border-radius:8px; font-size:13px; z-index:120; display:none; }
+  .detail-list { font-size:14px; }
+  .detail-list .dl { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #e5e7eb; }
+  .detail-list .dl:last-child { border-bottom:none; }
+  .detail-list .dk { color:#6b7280; }
+  .detail-list .dv { color:#111827; font-weight:600; }
+</style>
+</head>
+<body>
+
+<!-- 登录界面 -->
+<div id="loginView" class="login-wrap">
+  <div class="login-box">
+    <div class="logo">绩</div>
+    <h2>装维绩效反馈</h2>
+    <div class="sub">请使用工号和姓名登录</div>
+    <div class="field"><label>工号</label><input id="loginNo" type="text" placeholder="请输入工号" autocomplete="off"></div>
+    <div class="field"><label>姓名</label><input id="loginName" type="text" placeholder="请输入姓名" autocomplete="off"></div>
+    <button id="btnLogin" class="btn-login">登 录</button>
+    <div id="loginErr" class="err"></div>
+    <div class="hint">提示：工号和姓名由管理员统一发放<br>如有疑问请联系管理员</div>
+  </div>
+</div>
+
+<!-- 主界面 -->
+<div id="mainView" style="display:none">
+  <div class="topbar">
+    <div>
+      <h1>装维绩效反馈</h1>
+      <div class="sub" id="userLine"></div>
+    </div>
+    <button class="logout" id="btnLogout">退出</button>
+  </div>
+  <div class="container">
+    <div class="stat-row">
+      <div class="stat"><div class="num" id="stTotal">0</div><div class="lab">工资记录</div></div>
+      <div class="stat"><div class="num" id="stPending">0</div><div class="lab">待确认</div></div>
+      <div class="stat"><div class="num" id="stConfirmed">0</div><div class="lab">已确认</div></div>
+      <div class="stat"><div class="num" id="stQuestion">0</div><div class="lab">有疑问</div></div>
+    </div>
+    <div id="list"></div>
+    <div class="empty" id="emptyTip" style="display:none">暂无工资记录</div>
+    <div class="footer">本系统数据仅限本人查看 · 3天内未确认将自动确认</div>
+  </div>
+</div>
+
+<!-- 反馈弹窗 -->
+<div id="fbModal" class="modal-mask">
+  <div class="modal">
+    <h3 id="fbTitle">提交疑问反馈</h3>
+    <textarea id="fbText" placeholder="请描述你的疑问，例如：某月绩效金额与实际上报不一致、计件数量有出入等"></textarea>
+    <div class="btns">
+      <button class="cancel" id="fbCancel">取消</button>
+      <button class="ok" id="fbOk">提交反馈</button>
+    </div>
+  </div>
+</div>
+
+<!-- 明细弹窗 -->
+<div id="dtModal" class="modal-mask">
+  <div class="modal">
+    <h3 id="dtTitle">工资明细</h3>
+    <div class="detail-list" id="dtBody"></div>
+    <div class="btns"><button class="cancel" id="dtClose" style="flex:1">关 闭</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ================= 配置（请勿随意修改） =================
+var SUPABASE_URL = 'https://spdruwsigkbefopzoifo.supabase.co/rest/v1';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwZHJ1d3NpZ2tiZWZvcHpvaWZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODI5MjAsImV4cCI6MjEwNjE1ODkyMH0.MFQQ_I2l8mkxMKtnxym_aM3p4-nFHMbbgmoIihZb7n4';
+// ========================================================
+
+var worker = { worker_no: '', name: '' };
+var cur = null;   // 当前反馈的记录 id
+var recCache = []; // 记录缓存，供倒计时刷新使用
+
+function $(id){ return document.getElementById(id); }
+
+function toast(msg){
+  var t = $('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.display = 'none'; }, 2400);
+}
+
+async function rpc(fn, args){
+  var res = await fetch(SUPABASE_URL + '/rpc/' + fn, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(args || {})
+  });
+  if (!res.ok) {
+    var txt = await res.text();
+    throw new Error('请求失败(' + res.status + ') ' + txt.slice(0, 120));
+  }
+  var ct = res.headers.get('content-type') || '';
+  if (ct.indexOf('json') >= 0) return res.json();
+  return res.text();
+}
+
+function fmtDate(iso){
+  if (!iso) return '-';
+  var d = new Date(iso);
+  var p = function(n){ return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
+function deadlineOf(rec){
+  return new Date(new Date(rec.created_at).getTime() + 72 * 3600 * 1000);
+}
+
+function statusBadge(s){
+  var map = {
+    pending: ['待确认', 'b-pending'],
+    confirmed: ['已确认', 'b-confirmed'],
+    auto_confirmed: ['已自动确认', 'b-auto'],
+    question: ['有疑问', 'b-question']
+  };
+  var m = map[s] || [s, 'b-auto'];
+  return '<span class="badge ' + m[1] + '">' + m[0] + '</span>';
+}
+
+function countdownStr(rec){
+  if (rec.status !== 'pending') return '';
+  var left = deadlineOf(rec).getTime() - Date.now();
+  if (left <= 0) return '';
+  var h = Math.floor(left / 3600000);
+  var m = Math.floor((left % 3600000) / 60000);
+  var s = Math.floor((left % 60000) / 1000);
+  return '<div class="countdown" data-cd="' + rec.id + '">距离自动确认还剩 ' + h + ' 小时 ' + m + ' 分 ' + s + ' 秒</div>';
+}
+
+function renderItems(items){
+  if (!items) return '<div class="items"><div class="row"><span class="k">暂无明细</span></div></div>';
+  var keys = Object.keys(items);
+  if (!keys.length) return '<div class="items"><div class="row"><span class="k">暂无明细</span></div></div>';
+  var html = '<div class="items">';
+  keys.forEach(function(k){
+    html += '<div class="row"><span class="k">' + k + '</span><span class="v">' + (items[k] !== null && items[k] !== undefined ? items[k] : '-') + '</span></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderList(records){
+  var box = $('list');
+  var total = 0, pend = 0, conf = 0, que = 0;
+  records.forEach(function(r){
+    total++;
+    if (r.status === 'pending') pend++;
+    if (r.status === 'confirmed' || r.status === 'auto_confirmed') conf++;
+    if (r.status === 'question') que++;
+  });
+  $('stTotal').textContent = total;
+  $('stPending').textContent = pend;
+  $('stConfirmed').textContent = conf;
+  $('stQuestion').textContent = que;
+  if (!records.length) { $('emptyTip').style.display = 'block'; box.innerHTML = ''; return; }
+  $('emptyTip').style.display = 'none';
+
+  records.forEach(function(r, idx){
+    var idKey = 'r' + idx;
+    var fbBlock = '';
+    if (r.feedback) {
+      var replyBlock = r.reply
+        ? '<div class="reply"><b>管理员回复：</b>' + r.reply + '<br><span style="color:#9ca3af">(' + fmtDate(r.reply_time) + ')</span></div>'
+        : '<div class="reply"><b>你的反馈：</b>' + r.feedback + '<br><span style="color:#b45309">待管理员回复</span></div>';
+    fbBlock = replyBlock;
+  }
+  // 仅 pending 显示倒计时；已自动确认的记录带说明
+  var autoTip = (r.status === 'auto_confirmed') ? '<div class="countdown" style="color:#64748b">该记录已超过3天未确认，系统自动确认</div>' : '';
+  var actHtml;
+    if (r.status === 'pending') {
+      actHtml = '<button class="btn btn-confirm" onclick="doConfirm(' + r.id + ')">确认无误</button>' +
+                '<button class="btn btn-question" onclick="openFb(' + r.id + ')">有疑问</button>';
+    } else if (r.status === 'auto_confirmed') {
+      actHtml = '<button class="btn btn-confirm" onclick="doConfirm(' + r.id + ')">补确认</button>' +
+                '<button class="btn btn-question" onclick="openFb(' + r.id + ')">有疑问</button>';
+    } else if (r.status === 'question') {
+      actHtml = '<button class="btn btn-disabled" disabled>处理中</button>' +
+                '<button class="btn btn-confirm" style="background:#1a6b40;color:#fff" onclick="doConfirm(' + r.id + ')">确认</button>';
+    } else {
+      actHtml = '<button class="btn btn-disabled" disabled>已确认</button>' +
+                '<button class="btn btn-question" onclick="openFb(' + r.id + ')">有疑问</button>';
+    }
+    html += '<div class="card" id="' + idKey + '">' +
+      '<div class="card-head"><span class="month">' + r.month + ' 月工资</span>' + statusBadge(r.status) + '</div>' +
+      '<div class="total">' + (r.total !== null ? '¥ ' + r.total : '—') + '<small>（' + r.month + '月）</small></div>' +
+      renderItems(r.items) +
+      countdownStr(r) + autoTip +
+      '<div class="actions">' + actHtml + '</div>' +
+      fbBlock +
+    '</div>';
+  });
+  box.innerHTML = html;
+  // 倒计时每秒实时刷新
+  clearInterval(window._cd);
+  window._cd = setInterval(function(){
+    var els = box.querySelectorAll('[data-cd]');
+    if (!els.length) return;
+    els.forEach(function(el){
+      var id = el.getAttribute('data-cd');
+      var rec = null;
+      for (var i = 0; i < records.length; i++) { if (records[i].id == id) { rec = records[i]; break; } }
+      if (!rec) return;
+      var left = deadlineOf(rec).getTime() - Date.now();
+      if (left <= 0) { loadData(); return; }
+      var h = Math.floor(left / 3600000);
+      var m = Math.floor((left % 3600000) / 60000);
+      var s = Math.floor((left % 60000) / 1000);
+      el.textContent = '距离自动确认还剩 ' + h + ' 小时 ' + m + ' 分 ' + s + ' 秒';
+    });
+  }, 1000);
+}
+
+async function loadData(){
+  try {
+    var recs = await rpc('jx_my_salaries', { p_worker_no: worker.worker_no, p_name: worker.name });
+    renderList(recs || []);
+  } catch(e){
+    toast('加载失败：' + e.message);
+  }
+}
+
+function doConfirm(id){
+  rpc('jx_confirm', { p_worker_no: worker.worker_no, p_name: worker.name, p_rec_id: id })
+    .then(function(ok){
+      if (ok) { toast('确认成功'); loadData(); }
+      else toast('确认失败，请刷新重试');
+    }).catch(function(e){ toast(e.message); });
+}
+
+function openFb(id){
+  cur = id;
+  $('fbTitle').textContent = '提交疑问反馈';
+  $('fbText').value = '';
+  $('fbModal').style.display = 'flex';
+}
+
+function submitFb(){
+  var msg = $('fbText').value.trim();
+  if (!msg) { toast('请填写反馈内容'); return; }
+  rpc('jx_feedback', { p_worker_no: worker.worker_no, p_name: worker.name, p_rec_id: cur, p_msg: msg })
+    .then(function(ok){
+      if (ok) { $('fbModal').style.display = 'none'; toast('反馈已提交，请等待管理员回复'); loadData(); }
+      else toast('提交失败，请重试');
+    }).catch(function(e){ toast(e.message); });
+}
+
+function showDetail(rec){
+  var body = '';
+  var keys = Object.keys(rec.items || {});
+  if (keys.length) {
+    keys.forEach(function(k){
+      body += '<div class="dl"><span class="dk">' + k + '</span><span class="dv">' + rec.items[k] + '</span></div>';
+    });
+  }
+  body += '<div class="dl"><span class="dk">工资月份</span><span class="dv">' + rec.month + '</span></div>' +
+          '<div class="dl"><span class="dk">上传时间</span><span class="dv">' + fmtDate(rec.created_at) + '</span></div>' +
+          '<div class="dl"><span class="dk">确认时间</span><span class="dv">' + fmtDate(rec.confirm_time) + '</span></div>';
+  $('dtTitle').textContent = rec.month + '月工资明细（¥' + (rec.total !== null ? rec.total : '-') + '）';
+  $('dtBody').innerHTML = body;
+  $('dtModal').style.display = 'flex';
+}
+
+// ---------- 事件 ----------
+$('btnLogin').onclick = function(){
+  var no = $('loginNo').value.trim();
+  var name = $('loginName').value.trim();
+  if (!no || !name) { $('loginErr').textContent = '请输入工号和姓名'; return; }
+  $('btnLogin').disabled = true;
+  $('btnLogin').textContent = '登录中...';
+  rpc('jx_worker_login', { p_worker_no: no, p_name: name })
+    .then(function(ok){
+      if (ok) {
+        worker = { worker_no: no, name: name };
+        try { localStorage.setItem('jx_worker', JSON.stringify(worker)); } catch(e){}
+        enterMain();
+      } else {
+        $('loginErr').textContent = '工号或姓名不匹配，请核对后重试';
+      }
+    })
+    .catch(function(e){
+      $('loginErr').textContent = '登录失败：' + e.message;
+    })
+    .finally(function(){
+      $('btnLogin').disabled = false;
+      $('btnLogin').textContent = '登 录';
+    });
+};
+
+function enterMain(){
+  $('loginView').style.display = 'none';
+  $('mainView').style.display = 'block';
+  $('userLine').textContent = worker.name + '（工号 ' + worker.worker_no + '）';
+  loadData();
+}
+
+$('btnLogout').onclick = function(){
+  try { localStorage.removeItem('jx_worker'); } catch(e){}
+  worker = null;
+  $('mainView').style.display = 'none';
+  $('loginView').style.display = 'flex';
+  $('loginNo').value = ''; $('loginName').value = '';
+  $('loginErr').textContent = '';
+};
+
+$('fbCancel').onclick = function(){ $('fbModal').style.display = 'none'; };
+$('fbOk').onclick = submitFb;
+$('dtClose').onclick = function(){ $('dtModal').style.display = 'none'; };
+
+['fbModal','dtModal'].forEach(function(id){
+  document.getElementById(id).addEventListener('click', function(e){ if (e.target === this) this.style.display = 'none'; });
+});
+
+// 自动登录
+(function(){
+  try {
+    var saved = localStorage.getItem('jx_worker');
+    if (saved) {
+      var w = JSON.parse(saved);
+      if (w && w.worker_no && w.name) {
+        rpc('jx_worker_login', { p_worker_no: w.worker_no, p_name: w.name })
+          .then(function(ok){
+            if (ok) { worker = w; enterMain(); }
+          }).catch(function(){});
+      }
+    }
+  } catch(e){}
+})();
+</script>
+</body>
+</html>

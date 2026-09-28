@@ -485,6 +485,14 @@ function mapColumns(rows){
 }
 
 function normMonth(v){
+  // Excel 序列日期（如 46266.33 → 2026-09）
+  if (typeof v === 'number' && v > 20000 && v < 80000) {
+    var d0 = new Date(Math.round((v - 25569) * 86400 * 1000));
+    if (!isNaN(d0.getTime()) && d0.getFullYear() >= 2000 && d0.getFullYear() <= 2100) {
+      var pz = function(n){ return (n < 10 ? '0' : '') + n; };
+      return d0.getFullYear() + '-' + pz(d0.getMonth() + 1);
+    }
+  }
   var s = String(v).trim();
   if (!s) return null;
   if (/^\d{6}$/.test(s)) return s.slice(0,4) + '-' + s.slice(4);

@@ -234,6 +234,7 @@ function renderList(records){
   if (!records.length) { $('emptyTip').style.display = 'block'; box.innerHTML = ''; return; }
   $('emptyTip').style.display = 'none';
 
+  var html = '';
   records.forEach(function(r, idx){
     var idKey = 'r' + idx;
     var fbBlock = '';

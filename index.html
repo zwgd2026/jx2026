@@ -36,7 +36,10 @@
   .btn-confirm { background:#0d3b6e; color:#fff; }
   .btn-question { background:#fff; color:#d93c3c; border:1px solid #f3b4b4; }
   .btn-disabled { background:#e5e7eb; color:#9ca3af; cursor:not-allowed; }
-  .reply-box { background:#fff8f0; border-left:3px solid #f59e0b; border-radius:6px; padding:8px 12px; margin-top:10px; font-size:13px; color:#78350f; }
+  .reply-box { background:#fff8f0; border-left:4px solid #f59e0b; border-radius:8px; padding:12px 14px; margin-top:12px; }
+  .reply-box .tag { display:inline-block; background:#f59e0b; color:#fff; font-size:13px; font-weight:600; border-radius:6px; padding:3px 10px; margin-bottom:8px; letter-spacing:1px; }
+  .reply-box .content { font-size:17px; font-weight:600; color:#111827; line-height:1.6; word-break:break-all; }
+  .reply-box .time { font-size:13px; color:#9ca3af; margin-top:6px; }
   .empty { text-align:center; color:#9ca3af; padding:40px 0; font-size:14px; }
   .footer { text-align:center; color:#9ca3af; font-size:12px; padding:18px 0 26px; }
   /* 登录 */
@@ -62,6 +65,8 @@
   .modal .btns button { flex:1; padding:10px 0; border-radius:9px; font-size:14px; cursor:pointer; border:none; }
   .modal .cancel { background:#f1f3f5; color:#374151; }
   .modal .ok { background:#d93c3c; color:#fff; }
+  .cf-tip { font-size:15px; color:#475569; line-height:1.8; }
+  .ok-blue { background:#0d3b6e !important; color:#fff !important; }
   .toast { position:fixed; left:50%; bottom:40px; transform:translateX(-50%); background:rgba(17,24,39,.88); color:#fff; padding:9px 18px; border-radius:8px; font-size:13px; z-index:120; display:none; }
   .detail-list { font-size:14px; }
   .detail-list .dl { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #e5e7eb; }
@@ -99,6 +104,18 @@
     <div id="list"></div>
     <div class="empty" id="emptyTip" style="display:none">暂无工资记录</div>
     <div class="footer">本系统数据仅限本人查看 · 3天内未确认将自动确认</div>
+  </div>
+</div>
+
+<!-- 确认弹窗 -->
+<div id="cfModal" class="modal-mask">
+  <div class="modal">
+    <h3>确认本月工资无误？</h3>
+    <div class="cf-tip">确认后表示你已核对本月工资明细无误，<b>确认后将不能再提交疑问反馈</b>，请在核对后再确认。</div>
+    <div class="btns">
+      <button class="cancel" id="cfCancel">再想想</button>
+      <button class="ok ok-blue" id="cfOk">确认无误</button>
+    </div>
   </div>
 </div>
 
@@ -218,11 +235,11 @@ function renderList(records){
     var idKey = 'r' + idx;
     var fbBlock = '';
     if (r.feedback) {
-      var replyBlock = r.reply
-        ? '<div class="reply"><b>管理员回复：</b>' + r.reply + '<br><span style="color:#9ca3af">(' + fmtDate(r.reply_time) + ')</span></div>'
-        : '<div class="reply"><b>你的反馈：</b>' + r.feedback + '<br><span style="color:#b45309">待管理员回复</span></div>';
-    fbBlock = replyBlock;
-  }
+      fbBlock += '<div class="reply-box"><div class="tag" style="background:#d93c3c">你的反馈</div><div class="content">' + r.feedback + '</div><div class="time">' + fmtDate(r.feedback_time) + '</div></div>';
+    }
+    if (r.reply) {
+      fbBlock += '<div class="reply-box"><div class="tag">管理员回复</div><div class="content">' + r.reply + '</div><div class="time">' + fmtDate(r.reply_time) + '</div></div>';
+    }
   // 仅 pending 显示倒计时；已自动确认的记录带说明
   var autoTip = (r.status === 'auto_confirmed') ? '<div class="countdown" style="color:#64748b">该记录已超过3天未确认，系统自动确认</div>' : '';
   var actHtml;
@@ -236,8 +253,7 @@ function renderList(records){
       actHtml = '<button class="btn btn-disabled" disabled>处理中</button>' +
                 '<button class="btn btn-confirm" style="background:#1a6b40;color:#fff" onclick="doConfirm(' + r.id + ')">确认</button>';
     } else {
-      actHtml = '<button class="btn btn-disabled" disabled>已确认</button>' +
-                '<button class="btn btn-question" onclick="openFb(' + r.id + ')">有疑问</button>';
+      actHtml = '<button class="btn btn-disabled" disabled>已确认</button>';
     }
     html += '<div class="card" id="' + idKey + '">' +
       '<div class="card-head"><span class="month">' + r.month + ' 月工资</span>' + statusBadge(r.status) + '</div>' +
@@ -278,7 +294,18 @@ async function loadData(){
   }
 }
 
+var cfPendingId = null; // 待确认的记录 id
+
 function doConfirm(id){
+  cfPendingId = id;
+  $('cfModal').style.display = 'flex';
+}
+
+function execConfirm(){
+  if (cfPendingId == null) return;
+  var id = cfPendingId;
+  cfPendingId = null;
+  $('cfModal').style.display = 'none';
   rpc('jx_confirm', { p_worker_no: worker.worker_no, p_name: worker.name, p_rec_id: id })
     .then(function(ok){
       if (ok) { toast('确认成功'); loadData(); }
@@ -364,8 +391,10 @@ $('btnLogout').onclick = function(){
 $('fbCancel').onclick = function(){ $('fbModal').style.display = 'none'; };
 $('fbOk').onclick = submitFb;
 $('dtClose').onclick = function(){ $('dtModal').style.display = 'none'; };
+$('cfCancel').onclick = function(){ cfPendingId = null; $('cfModal').style.display = 'none'; };
+$('cfOk').onclick = execConfirm;
 
-['fbModal','dtModal'].forEach(function(id){
+['fbModal','dtModal','cfModal'].forEach(function(id){
   document.getElementById(id).addEventListener('click', function(e){ if (e.target === this) this.style.display = 'none'; });
 });
 

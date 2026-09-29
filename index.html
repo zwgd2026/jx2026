@@ -16,10 +16,6 @@
   .user-info { display:flex; justify-content:space-between; align-items:center; }
   .user-info .name { font-size:17px; font-weight:600; color:#0d3b6e; }
   .user-info .no { font-size:13px; color:#6b7280; }
-  .stat-row { display:flex; gap:8px; margin-bottom:14px; }
-  .stat { flex:1; background:#fff; border-radius:10px; padding:10px 6px; text-align:center; box-shadow:0 1px 3px rgba(16,42,84,.06); }
-  .stat .num { font-size:20px; font-weight:700; color:#0d3b6e; }
-  .stat .lab { font-size:12px; color:#6b7280; margin-top:2px; }
   .card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
   .card-head .month { font-size:16px; font-weight:700; color:#111827; }
   .total { font-size:22px; font-weight:800; color:#0d3b6e; margin-bottom:10px; }
@@ -100,12 +96,6 @@
     <button class="logout" id="btnLogout">退出</button>
   </div>
   <div class="container">
-    <div class="stat-row">
-      <div class="stat"><div class="num" id="stTotal">0</div><div class="lab">工资记录</div></div>
-      <div class="stat"><div class="num" id="stPending">0</div><div class="lab">待确认</div></div>
-      <div class="stat"><div class="num" id="stConfirmed">0</div><div class="lab">已确认</div></div>
-      <div class="stat"><div class="num" id="stQuestion">0</div><div class="lab">有疑问</div></div>
-    </div>
     <div id="list"></div>
     <div class="empty" id="emptyTip" style="display:none">暂无工资记录</div>
     <div class="footer">本系统数据仅限本人查看 · 3天内未确认将自动确认</div>
@@ -220,17 +210,6 @@ function renderItems(items){
 
 function renderList(records){
   var box = $('list');
-  var total = 0, pend = 0, conf = 0, que = 0;
-  records.forEach(function(r){
-    total++;
-    if (r.status === 'pending') pend++;
-    if (r.status === 'confirmed' || r.status === 'auto_confirmed') conf++;
-    if (r.status === 'question') que++;
-  });
-  $('stTotal').textContent = total;
-  $('stPending').textContent = pend;
-  $('stConfirmed').textContent = conf;
-  $('stQuestion').textContent = que;
   if (!records.length) { $('emptyTip').style.display = 'block'; box.innerHTML = ''; return; }
   $('emptyTip').style.display = 'none';
 

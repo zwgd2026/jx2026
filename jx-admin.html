@@ -7,60 +7,35 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; background:#f0f4f8; color:#1f2937; }
-  /* 顶栏 */
-  .topbar { background:linear-gradient(135deg,#0f2b5b 0%,#1a4a8a 100%); color:#fff; padding:13px 20px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:50; box-shadow:0 2px 8px rgba(15,43,91,.18); }
+  .topbar { background:linear-gradient(135deg,#0f2b5b 0%,#1a4a8a 100%); color:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:50; }
   .topbar h1 { font-size:17px; font-weight:600; letter-spacing:1px; }
   .topbar .sub { font-size:12px; opacity:.8; margin-top:2px; }
-  .topbar .logout { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:8px; padding:6px 14px; font-size:13px; cursor:pointer; white-space:nowrap; }
-  /* Tab 导航 */
-  .tabbar { background:#fff; display:flex; gap:0; border-bottom:2px solid #eef2f7; position:sticky; top:52px; z-index:40; overflow-x:auto; -webkit-overflow-scrolling:touch; }
-  .tabbar::-webkit-scrollbar { display:none; }
-  .tab { padding:13px 22px; font-size:14px; font-weight:600; color:#64748b; cursor:pointer; white-space:nowrap; border-bottom:3px solid transparent; transition:all .2s; flex-shrink:0; }
-  .tab:hover { color:#0d3b6e; }
-  .tab.active { color:#0d3b6e; border-bottom-color:#0d3b6e; background:#f8faff; }
-  .tab .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#d93c3c; margin-left:2px; vertical-align:middle; display:none; }
-  .tab .dot.show { display:inline-block; }
-  /* 容器 */
-  .container { max-width:920px; margin:0 auto; padding:16px; }
-  .tab-page { display:none; }
-  .tab-page.active { display:block; }
-  /* 卡片 */
-  .card { background:#fff; border-radius:12px; box-shadow:0 1px 4px rgba(16,42,84,.08); padding:18px; margin-bottom:14px; }
-  .card h2 { font-size:15px; color:#0d3b6e; margin-bottom:14px; display:flex; align-items:center; }
+  .topbar .logout { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; }
+  .container { max-width:900px; margin:0 auto; padding:16px; }
+  .card { background:#fff; border-radius:12px; box-shadow:0 1px 4px rgba(16,42,84,.08); padding:16px; margin-bottom:14px; }
+  .card h2 { font-size:15px; color:#0d3b6e; margin-bottom:12px; display:flex; align-items:center; }
   .card h2 .tag { font-size:11px; background:#e8f1fe; color:#1a5dc9; border-radius:6px; padding:2px 8px; margin-left:8px; font-weight:400; }
-  /* 统计 */
-  .stat-grid { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
-  .stat { flex:1; min-width:100px; background:#fff; border-radius:12px; padding:14px 8px; text-align:center; box-shadow:0 1px 4px rgba(16,42,84,.07); transition:transform .15s; }
-  .stat:active { transform:scale(.97); }
-  .stat .num { font-size:24px; font-weight:800; color:#0d3b6e; }
-  .stat .lab { font-size:12px; color:#6b7280; margin-top:4px; }
+  .stat-row, .stat-grid { display:flex; gap:8px; flex-wrap:wrap; }
+  .stat { flex:1; min-width:92px; background:#fff; border-radius:10px; padding:12px 6px; text-align:center; box-shadow:0 1px 3px rgba(16,42,84,.06); }
+  .stat .num { font-size:22px; font-weight:800; color:#0d3b6e; }
+  .stat .lab { font-size:12px; color:#6b7280; margin-top:3px; }
   .stat.q .num { color:#d93c3c; }
   .stat.p .num { color:#f59e0b; }
-  .stat.c .num { color:#14824c; }
-  /* 按钮 */
   .btn { border:none; border-radius:8px; padding:9px 16px; font-size:13px; font-weight:600; cursor:pointer; transition:opacity .2s; }
   .btn:active { opacity:.75; }
   .btn-p { background:#0d3b6e; color:#fff; }
   .btn-o { background:#fff; color:#0d3b6e; border:1px solid #b9c7dc; }
   .btn-r { background:#fff; color:#d93c3c; border:1px solid #f3b4b4; }
-  .btn-s { background:#14824c; color:#fff; }
   .btn-g { background:#eef1f4; color:#64748b; }
-  /* 上传区 */
-  .upload-area { border:2px dashed #b9c7dc; border-radius:10px; padding:28px 16px; text-align:center; color:#64748b; cursor:pointer; transition:all .2s; background:#fafcff; }
+  .btn-s { background:#14824c; color:#fff; }
+  .upload-area { border:2px dashed #b9c7dc; border-radius:10px; padding:26px 16px; text-align:center; color:#64748b; cursor:pointer; transition:all .2s; background:#fafcff; }
   .upload-area:hover { border-color:#2e6bb0; color:#0d3b6e; background:#f2f7ff; }
-  .upload-area .big { font-size:28px; font-weight:800; color:#0d3b6e; }
-  .upload-area .txt { margin-top:8px; font-size:13px; }
+  .upload-area .big { font-size:26px; font-weight:800; color:#0d3b6e; }
+  .upload-area .txt { margin-top:6px; font-size:13px; }
   .file-input { display:none; }
-  .preview-box { background:#f8fafc; border-radius:8px; padding:12px; font-size:13px; margin-top:12px; }
-  .preview-box table { font-size:12px; }
-  .preview-box th { background:#eef2f7; }
-  /* 工具栏 */
-  .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
-  .toolbar h2 { margin:0; }
-  .filters { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; align-items:center; }
   .filters select, .filters input { padding:8px 10px; border:1px solid #d1d9e6; border-radius:8px; font-size:13px; background:#fff; }
   .filters .btn { padding:8px 14px; }
-  /* 表格 */
   table { width:100%; border-collapse:collapse; font-size:13px; }
   th { background:#f4f7fb; color:#475569; text-align:left; padding:9px 8px; font-weight:600; white-space:nowrap; }
   td { padding:9px 8px; border-top:1px solid #eef2f7; vertical-align:middle; }
@@ -70,18 +45,26 @@
   .b-confirmed { background:#e7f7ee; color:#14824c; }
   .b-auto { background:#eef1f4; color:#64748b; }
   .b-question { background:#fdecec; color:#d93c3c; }
+  .b-resolved { background:#e7f7ee; color:#14824c; }
+  .b-unresolved { background:#fef3c7; color:#b45309; }
   .op { display:flex; gap:5px; flex-wrap:wrap; }
   .op button { border:none; border-radius:6px; padding:5px 9px; font-size:12px; cursor:pointer; background:#f1f5f9; color:#334155; }
   .op button.r { background:#fdecec; color:#d93c3c; }
   .op button.g { background:#e7f7ee; color:#14824c; }
   .op button.b { background:#e8f1fe; color:#1a5dc9; }
   .mobile-table { display:none; }
+  .preview-box { background:#f8fafc; border-radius:8px; padding:12px; font-size:13px; margin-top:12px; }
+  .preview-box table { font-size:12px; }
+  .preview-box th { background:#eef2f7; }
   .mb { margin-bottom:10px; }
   .muted { color:#94a3b8; font-size:12px; }
-  .empty { text-align:center; color:#9ca3af; padding:30px 0; font-size:14px; }
-  .empty .icon { font-size:28px; margin-bottom:8px; color:#cbd5e1; }
-  .fb-text { background:#fdecec; border-left:3px solid #d93c3c; padding:7px 10px; border-radius:4px; font-size:12px; color:#7f1d1d; margin-top:4px; line-height:1.5; }
-  .reply-text { background:#fff8f0; border-left:3px solid #f59e0b; padding:7px 10px; border-radius:4px; font-size:12px; color:#78350f; margin-top:4px; line-height:1.5; }
+  .green { color:#14824c; }
+  .red { color:#d93c3c; }
+  .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
+  .search-inline { display:flex; gap:8px; }
+  .empty { text-align:center; color:#9ca3af; padding:26px 0; font-size:13px; }
+  .reply-text { background:#fff8f0; border-left:3px solid #f59e0b; padding:6px 10px; border-radius:4px; font-size:12px; color:#78350f; margin-top:4px; }
+  .fb-text { background:#fdecec; border-left:3px solid #d93c3c; padding:6px 10px; border-radius:4px; font-size:12px; color:#7f1d1d; margin-top:4px; }
   /* 弹窗 */
   .modal-mask { position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center; z-index:99; padding:20px; }
   .modal { background:#fff; border-radius:14px; width:100%; max-width:440px; padding:22px; max-height:86vh; overflow-y:auto; }
@@ -93,7 +76,7 @@
   .modal .cancel { background:#f1f3f5; color:#374151; }
   .modal .ok { background:#0d3b6e; color:#fff; }
   .modal .ok.red { background:#d93c3c; }
-  .dl { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed #e5e7eb; font-size:14px; }
+  .dl { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #e5e7eb; font-size:14px; }
   .dl:last-child { border-bottom:none; }
   .dk { color:#6b7280; }
   .dv { font-weight:600; color:#111827; }
@@ -108,21 +91,31 @@
   .err { color:#d93c3c; font-size:13px; margin-top:8px; display:none; }
   .toast { position:fixed; left:50%; bottom:40px; transform:translateX(-50%); background:rgba(17,24,39,.88); color:#fff; padding:9px 18px; border-radius:8px; font-size:13px; z-index:120; display:none; }
   .footer { text-align:center; color:#9ca3af; font-size:12px; padding:16px 0 24px; }
-  /* 设置页 */
-  .setting-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .setting-row input { padding:9px 12px; border:1px solid #d1d9e6; border-radius:8px; font-size:14px; flex:1; min-width:120px; }
+  .workers { font-size:13px; color:#475569; line-height:2; }
+  .workers span { display:inline-block; background:#f1f5f9; border-radius:6px; padding:3px 9px; margin:3px 4px 0 0; }
+  /* Tab 导航 */
+  .tabbar { background:#fff; display:flex; gap:0; border-bottom:2px solid #eef2f7; position:sticky; top:52px; z-index:40; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .tabbar::-webkit-scrollbar { display:none; }
+  .tab { padding:13px 22px; font-size:14px; font-weight:600; color:#64748b; cursor:pointer; white-space:nowrap; border-bottom:3px solid transparent; transition:all .2s; flex-shrink:0; }
+  .tab:hover { color:#0d3b6e; }
+  .tab.active { color:#0d3b6e; border-bottom-color:#0d3b6e; background:#f8faff; }
+  .tab .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#d93c3c; margin-left:2px; vertical-align:middle; display:none; }
+  .tab .dot.show { display:inline-block; }
+  .tab-page { display:none; }
+  .tab-page.active { display:block; }
+  .section-title { font-size:14px; font-weight:700; color:#0d3b6e; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eef2f7; }
   .info-box { background:#f0f7ff; border:1px solid #c7dbf3; border-radius:10px; padding:14px 16px; font-size:13px; color:#1e3a5f; line-height:1.6; margin-bottom:14px; }
   .info-box b { color:#0d3b6e; }
-  .workers { font-size:13px; color:#475569; line-height:2; }
-  .workers span { display:inline-block; background:#f1f5f9; border-radius:6px; padding:3px 10px; margin:3px 4px 0 0; }
   .help-list { padding-left:18px; font-size:13px; color:#475569; line-height:2; }
   .help-list li { margin:4px 0; }
-  .section-title { font-size:14px; font-weight:700; color:#0d3b6e; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eef2f7; }
-  /* 异议专用 */
-  .fb-card { background:#fff; border-radius:10px; padding:14px 16px; margin-bottom:10px; border-left:4px solid #d93c3c; box-shadow:0 1px 3px rgba(16,42,84,.06); }
+  .fb-card { background:#fff; border-radius:10px; padding:14px 16px; margin-bottom:10px; border-left:3px solid #e5e7eb; box-shadow:0 1px 3px rgba(16,42,84,.06); }
+  .fb-card.done { border-left-color:#14824c; }
   .fb-card .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px; }
   .fb-card .name { font-weight:700; font-size:14px; color:#111827; }
-  .fb-card .meta { font-size:12px; color:#94a3b8; }
+  .fb-card .meta { font-size:12px; color:#94a3b8; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .fb-card .tag { font-size:12px; font-weight:600; padding:2px 10px; border-radius:20px; }
+  .fb-card .tag.todo { background:#fef3c7; color:#b45309; }
+  .fb-card .tag.done { background:#e7f7ee; color:#14824c; }
   @media (max-width:640px){
     .desktop-table { display:none; }
     .mobile-table { display:table; }
@@ -131,9 +124,6 @@
     .mobile-card .row .k { color:#6b7280; }
     .mobile-card .row .v { font-weight:600; }
     .op { margin-top:6px; }
-    .tab { padding:11px 16px; font-size:13px; }
-    .stat { min-width:80px; }
-    .stat .num { font-size:20px; }
   }
 </style>
 </head>
@@ -155,8 +145,8 @@
 <div id="mainView" style="display:none">
   <div class="topbar">
     <div>
-      <h1>装维绩效反馈系统 · 管理端</h1>
-      <div class="sub">管理员</div>
+      <h1>装维绩效反馈 · 管理端</h1>
+      <div class="sub" id="adminLine">管理员</div>
     </div>
     <button class="logout" id="btnLogout">退出</button>
   </div>
@@ -175,16 +165,16 @@
       <div class="stat-grid">
         <div class="stat"><div class="num" id="stTotal">0</div><div class="lab">工资记录</div></div>
         <div class="stat p"><div class="num" id="stPending">0</div><div class="lab">待确认</div></div>
-        <div class="stat c"><div class="num" id="stConfirmed">0</div><div class="lab">已确认</div></div>
+        <div class="stat"><div class="num" id="stConfirmed">0</div><div class="lab">已确认</div></div>
         <div class="stat q"><div class="num" id="stQuestion">0</div><div class="lab">有疑问</div></div>
         <div class="stat"><div class="num" id="stWorkers">0</div><div class="lab">装维员</div></div>
       </div>
       <div class="card">
-        <h2>上传工资明细</h2>
+        <h2>上传工资明细<span class="tag" id="monthTag"></span></h2>
         <div class="upload-area" id="uploadArea">
           <div class="big">+</div>
-          <div class="txt">点击选择 Excel / CSV 文件</div>
-          <div class="muted" style="margin-top:6px">工号、姓名、月份为必含列，其余列自动作为工资明细项</div>
+          <div class="txt">点击选择 Excel / CSV 文件（工号、姓名、月份为必含列）</div>
+          <div class="muted" style="margin-top:6px">支持 .xlsx / .xls / .csv，其余列自动作为工资明细项</div>
         </div>
         <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv">
         <div id="previewBox" class="preview-box" style="display:none"></div>
@@ -193,8 +183,8 @@
           <button class="btn btn-o" id="btnCancelUpload" style="margin-left:8px">取消</button>
         </div>
         <div class="muted" style="margin-top:10px">
-          识别规则：工号列（工号/编号）、姓名列、月份列（如 2026-09）、合计列（总额/合计/实发/应发）。<br>
-          未识别到合计列时自动把数字列求和作为总额。重复上传同一记录会自动跳过。
+          识别规则：工号列（工号/编号）、姓名列（姓名）、月份列（月份，如 2026-09）、合计列（总额/合计/实发/应发）。<br>
+          未识别到合计列时，系统自动把数字列求和作为总额。重复上传同一记录会自动跳过。
         </div>
       </div>
     </div>
@@ -203,30 +193,26 @@
     <div class="tab-page" data-page="detail">
       <div class="card">
         <div class="toolbar">
-          <h2>工资记录</h2>
-          <div class="filters">
+          <div class="search-inline">
+            <input id="fSearch" type="text" placeholder="搜索工号/姓名" style="padding:8px 10px;border:1px solid #d1d9e6;border-radius:8px;font-size:13px;width:140px;background:#fff">
             <select id="fMonth"><option value="">全部月份</option></select>
             <select id="fStatus">
               <option value="">全部状态</option>
-              <option value="pending">待确认</option>
               <option value="confirmed">已确认</option>
-              <option value="auto_confirmed">已自动确认</option>
+              <option value="pending">待确认</option>
               <option value="question">有疑问</option>
             </select>
-            <button class="btn btn-o" id="btnExport">导出台账</button>
           </div>
+          <button class="btn btn-o" id="btnExport">导出台账</button>
         </div>
         <table class="desktop-table">
           <thead><tr>
-            <th>月份</th><th>工号</th><th>姓名</th><th>总额</th><th>状态</th><th>反馈/回复</th><th>操作</th>
+            <th style="width:11%">月份</th><th style="width:12%">工号</th><th style="width:11%">姓名</th><th style="width:11%">总额</th><th style="width:11%">状态</th><th style="width:18%">确认时间</th><th style="width:26%">操作</th>
           </tr></thead>
           <tbody id="tbody"></tbody>
         </table>
         <div class="mobile-table" id="mbody"></div>
-        <div id="listEmpty" class="empty" style="display:none">
-          <div class="icon">&#128193;</div>
-          <div>暂无记录，请先上传工资明细</div>
-        </div>
+        <div id="listEmpty" class="empty" style="display:none">暂无记录，请先上传工资明细</div>
       </div>
     </div>
 
@@ -234,17 +220,15 @@
     <div class="tab-page" data-page="feedback">
       <div class="card">
         <div class="toolbar">
-          <h2>异议反馈</h2>
-          <div class="filters">
+          <h2 style="margin:0">异议反馈</h2>
+          <div class="search-inline">
             <select id="fbMonth"><option value="">全部月份</option></select>
+            <select id="fbStatus2"><option value="unresolved">待处理</option><option value="">全部状态</option><option value="resolved">已完成</option></select>
             <button class="btn btn-o" id="btnExportFb">导出异议清单</button>
           </div>
         </div>
         <div id="fbList"></div>
-        <div id="fbEmpty" class="empty" style="display:none">
-          <div class="icon">&#9989;</div>
-          <div>暂无异议反馈，状态良好</div>
-        </div>
+        <div id="fbEmpty" class="empty" style="display:none">暂无异议反馈，状态良好</div>
       </div>
     </div>
 
@@ -259,19 +243,14 @@
       </div>
       <div class="card">
         <div class="section-title">修改管理口令</div>
-        <div class="setting-row" style="margin-bottom:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
           <input type="password" id="oldPin" placeholder="当前口令" style="flex:1;min-width:120px;padding:9px;border:1px solid #d1d9e6;border-radius:8px">
         </div>
-        <div class="setting-row" style="margin-bottom:10px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
           <input type="password" id="newPin" placeholder="新口令（至少4位）" style="flex:1;min-width:140px;padding:9px;border:1px solid #d1d9e6;border-radius:8px">
+          <button class="btn btn-p" id="btnChpw">修改</button>
         </div>
-        <button class="btn btn-p" id="btnChpw">修改口令</button>
-        <div class="muted" style="margin-top:8px">建议使用与工单系统不同的口令，并妥善保管。</div>
-      </div>
-      <div class="card">
-        <div class="section-title">装维员账号</div>
-        <div class="workers" id="workerList">加载中...</div>
-        <div class="muted" style="margin-top:8px">装维员账号由系统根据上传的工号+姓名自动创建，无需手工维护。</div>
+
       </div>
       <div class="card">
         <div class="section-title">使用说明</div>
@@ -281,7 +260,7 @@
           <li>超过 3 天未确认的记录，系统自动确认。</li>
           <li>在「明细管理」可查看进度、搜索、线下核实后手动标记确认、导出留档。</li>
           <li>在「异议反馈」集中处理员工的疑问，回复后员工可在手机端查看。</li>
-          <li>在「系统设置」可修改管理口令、查看装维员账号。</li>
+          <li>在「系统设置」可修改管理口令。</li>
         </ol>
       </div>
     </div>
@@ -318,6 +297,7 @@
 <script>
 var XLSX_READY = false;
 function onXlsxFail(){
+  // 备用 CDN
   var s = document.createElement('script');
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
   s.onload = function(){ XLSX_READY = true; };
@@ -335,7 +315,22 @@ var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 
 var adminPin = '';
 var currentList = [];
-var pendingUpload = null;
+var allList = [];
+var pendingUpload = null; // {rows, workerNoKey, nameKey, monthKey, totalKey, extraKeys}
+
+// ---------- Tab 切换 ----------
+var _tabs = document.querySelectorAll('.tab');
+var _pages = document.querySelectorAll('.tab-page');
+_tabs.forEach(function(tab){
+  tab.onclick = function(){
+    var name = tab.dataset.tab;
+    _tabs.forEach(function(t){ t.classList.remove('active'); });
+    _pages.forEach(function(p){ p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.querySelector('.tab-page[data-page="' + name + '"]').classList.add('active');
+    if (name === 'feedback') renderFeedbackList();
+  };
+});
 
 function $(id){ return document.getElementById(id); }
 function toast(msg){
@@ -365,28 +360,10 @@ function fmtDate(iso){
 }
 
 function badge(s){
-  var m = { pending:['待确认','b-pending'], confirmed:['已确认','b-confirmed'], auto_confirmed:['已自动确认','b-auto'], question:['有疑问','b-question'] };
+  var m = { pending:['待确认','b-pending'], confirmed:['已确认','b-confirmed'], auto_confirmed:['已确认','b-confirmed'], question:['有疑问','b-question'] };
   var x = m[s] || [s,'b-auto'];
   return '<span class="badge ' + x[1] + '">' + x[0] + '</span>';
 }
-
-function statusText(s){
-  return { pending: '待确认', confirmed: '已确认', auto_confirmed: '已自动确认', question: '有疑问' }[s] || s;
-}
-
-// ---------- Tab 切换 ----------
-var tabs = document.querySelectorAll('.tab');
-var pages = document.querySelectorAll('.tab-page');
-tabs.forEach(function(tab){
-  tab.onclick = function(){
-    var name = tab.dataset.tab;
-    tabs.forEach(function(t){ t.classList.remove('active'); });
-    pages.forEach(function(p){ p.classList.remove('active'); });
-    tab.classList.add('active');
-    document.querySelector('.tab-page[data-page="' + name + '"]').classList.add('active');
-    if (name === 'feedback') renderFeedbackList();
-  };
-});
 
 // ---------- 登录 ----------
 $('btnLogin').onclick = function(){
@@ -409,7 +386,6 @@ function enterMain(){
   $('mainView').style.display = 'block';
   loadStats();
   loadList();
-  loadWorkers();
   loadMonths();
 }
 $('btnLogout').onclick = function(){
@@ -428,10 +404,9 @@ function loadStats(){
       if (!s || !s.total && !s.workers) return;
       $('stTotal').textContent = s.total || 0;
       $('stPending').textContent = s.pending || 0;
-      $('stConfirmed').textContent = s.confirmed || 0;
+      $('stConfirmed').textContent = (s.confirmed || 0) + (s.auto_confirmed || 0);
       $('stQuestion').textContent = s.question || 0;
       $('stWorkers').textContent = s.workers || 0;
-      // 有异议时显示红点
       var dot = $('fbDot');
       if (s.question > 0) dot.classList.add('show'); else dot.classList.remove('show');
     }).catch(function(){});
@@ -440,9 +415,9 @@ function loadStats(){
 function loadMonths(){
   rpc('jx_admin_stats', { p_pin: adminPin })
     .then(function(s){
-      var cur1 = $('fMonth').value, cur2 = $('fbMonth').value;
       var html = '<option value="">全部月份</option>';
       (s.months || []).forEach(function(m){ html += '<option value="' + m + '">' + m + ' 月</option>'; });
+      var cur1 = $('fMonth').value, cur2 = $('fbMonth').value;
       $('fMonth').innerHTML = html;
       $('fbMonth').innerHTML = html;
       $('fMonth').value = cur1;
@@ -456,20 +431,30 @@ async function loadList(){
   var status = $('fStatus').value || null;
   var rows;
   try {
-    rows = await rpc('jx_admin_list', { p_pin: adminPin, p_month: month, p_status: status });
+    if (status === 'confirmed') {
+      rows = await rpc('jx_admin_list', { p_pin: adminPin, p_month: month });
+      rows = (rows || []).filter(function(r){ return r.status === 'confirmed' || r.status === 'auto_confirmed'; });
+    } else {
+      rows = await rpc('jx_admin_list', { p_pin: adminPin, p_month: month, p_status: status });
+    }
   } catch(e){ toast('加载失败：' + e.message); return; }
   rows = rows || [];
+  allList = rows;
+  renderList();
+}
+
+function renderList(){
+  var kw = ($('fSearch').value || '').trim().toLowerCase();
+  var rows = allList.filter(function(r){
+    if (!kw) return true;
+    return (r.worker_no && r.worker_no.toLowerCase().indexOf(kw) >= 0) || (r.name && r.name.toLowerCase().indexOf(kw) >= 0);
+  });
   currentList = rows;
   var tb = $('tbody'), mb = $('mbody');
   tb.innerHTML = ''; mb.innerHTML = '';
   $('listEmpty').style.display = rows.length ? 'none' : 'block';
   if (!rows.length) return;
   rows.forEach(function(r){
-    var fb = '';
-    if (r.feedback) {
-      fb = '<div class="fb-text">反馈：' + r.feedback + '</div>';
-      if (r.reply) fb += '<div class="reply-text">回复：' + r.reply + '</div>';
-    }
     var op = '<div class="op">' +
       '<button class="b" onclick="showDetail(' + r.id + ')">明细</button>' +
       (r.status === 'question' ? '<button class="g" onclick="openReply(' + r.id + ')">回复</button>' : '') +
@@ -482,19 +467,21 @@ async function loadList(){
       '<td>' + r.name + '</td>' +
       '<td>' + (r.total !== null ? r.total : '-') + '</td>' +
       '<td>' + badge(r.status) + '</td>' +
-      '<td>' + fb + '</td>' +
+      '<td style="font-size:12px;color:#6b7280">' + fmtDate(r.confirm_time) + '</td>' +
       '<td>' + op + '</td>' +
     '</tr>';
     mb.innerHTML += '<div class="mobile-card">' +
       '<div class="row"><span class="k">' + r.month + '月 · ' + r.name + '（' + r.worker_no + '）</span>' + badge(r.status) + '</div>' +
       '<div class="row"><span class="k">总额</span><span class="v">¥ ' + (r.total !== null ? r.total : '-') + '</span></div>' +
-      fb + op +
+      '<div class="row"><span class="k">确认时间</span><span class="v" style="font-size:12px">' + fmtDate(r.confirm_time) + '</span></div>' +
+      op +
     '</div>';
   });
 }
 
 $('fMonth').onchange = loadList;
 $('fStatus').onchange = loadList;
+$('fSearch').oninput = renderList;
 
 function showDetail(id){
   var r = currentList.find(function(x){ return x.id === id; });
@@ -504,7 +491,16 @@ function showDetail(id){
   keys.forEach(function(k){ body += '<div class="dl"><span class="dk">' + k + '</span><span class="dv">' + r.items[k] + '</span></div>'; });
   body += '<div class="dl"><span class="dk">上传时间</span><span class="dv">' + fmtDate(r.created_at) + '</span></div>' +
           '<div class="dl"><span class="dk">确认时间</span><span class="dv">' + fmtDate(r.confirm_time) + '</span></div>' +
+          '<div class="dl"><span class="dk">确认方式</span><span class="dv">' + (r.status === 'auto_confirmed' ? '自动确认' : '手动确认') + '</span></div>' +
           '<div class="dl"><span class="dk">批次</span><span class="dv">' + (r.batch_id || '-') + '</span></div>';
+  if (r.feedback) {
+    body += '<div class="dl"><span class="dk">员工反馈</span><span class="dv" style="color:#7f1d1d">' + r.feedback + '</span></div>' +
+            '<div class="dl"><span class="dk">反馈时间</span><span class="dv">' + fmtDate(r.feedback_time) + '</span></div>';
+  }
+  if (r.reply) {
+    body += '<div class="dl"><span class="dk">管理员回复</span><span class="dv" style="color:#78350f">' + r.reply + '</span></div>' +
+            '<div class="dl"><span class="dk">回复时间</span><span class="dv">' + fmtDate(r.reply_time) + '</span></div>';
+  }
   $('detailTitle').textContent = r.month + '月 · ' + r.name + ' 工资明细（¥' + (r.total !== null ? r.total : '-') + '）';
   $('detailBody').innerHTML = body;
   $('detailModal').style.display = 'flex';
@@ -589,6 +585,7 @@ function mapColumns(rows){
 }
 
 function normMonth(v){
+  // Excel 序列日期（如 46266.33 → 2026-09）
   if (typeof v === 'number' && v > 20000 && v < 80000) {
     var d0 = new Date(Math.round((v - 25569) * 86400 * 1000));
     if (!isNaN(d0.getTime()) && d0.getFullYear() >= 2000 && d0.getFullYear() <= 2100) {
@@ -611,6 +608,7 @@ function normMonth(v){
     var m = s.match(/^(\d{4})年(\d{1,2})月?$/);
     return m[1] + '-' + (m[2].length === 1 ? '0' + m[2] : m[2]);
   }
+  // 日期对象或类似 2026-09-01
   var d = new Date(s);
   if (!isNaN(d.getTime()) && d.getFullYear() > 2000 && /^\d/.test(s)) {
     var p2 = function(n){ return (n < 10 ? '0' : '') + n; };
@@ -625,6 +623,7 @@ function renderPreview(mapped, rows){
     if (k !== mapped.workerKey && k !== mapped.nameKey && k !== mapped.monthKey && k !== mapped.totalKey) extraKeys.push(k);
   });
   mapped.extraKeys = extraKeys;
+  // 生成上传数据
   var items = rows.map(function(r){
     var item = {};
     extraKeys.forEach(function(k){ item[k] = r[k] !== '' && r[k] !== undefined ? r[k] : null; });
@@ -636,6 +635,7 @@ function renderPreview(mapped, rows){
       items: item
     };
   }).filter(function(x){ return x.worker_no && x.name && x.month; });
+  // 无总额列时自动求和数字列
   if (!mapped.totalKey) {
     items.forEach(function(x){
       var sum = 0;
@@ -647,15 +647,20 @@ function renderPreview(mapped, rows){
     });
   }
   mapped.items = items;
-  var head = '<tr><th>#</th><th>工号</th><th>姓名</th><th>月份</th><th>总额</th></tr>';
+  // 渲染预览表
+  var cols = ['<th style="width:30px">#</th><th>工号</th><th>姓名</th><th>月份</th>'];
+  extraKeys.forEach(function(k){ cols.push('<th>' + k + '</th>'); });
+  cols.push('<th>总额</th>');
+  var head = '<tr>' + cols.join('') + '</tr>';
   var body = '';
-  var show = items.slice(0, 5);
-  show.forEach(function(x, i){
-    body += '<tr><td>' + (i+1) + '</td><td>' + x.worker_no + '</td><td>' + x.name + '</td><td>' + x.month + '</td><td>' + x.total + '</td></tr>';
+  items.forEach(function(x, i){
+    var tds = '<td>' + (i+1) + '</td><td>' + x.worker_no + '</td><td>' + x.name + '</td><td>' + x.month + '</td>';
+    extraKeys.forEach(function(k){ tds += '<td>' + (x.items[k] !== null ? x.items[k] : '-') + '</td>'; });
+    tds += '<td style="font-weight:700;color:#0d3b6e">' + (x.total !== null ? x.total : '-') + '</td>';
+    body += '<tr>' + tds + '</tr>';
   });
-  if (items.length > 5) body += '<tr><td colspan="5" class="muted">… 共 ' + items.length + ' 条，前 5 条预览</td></tr>';
-  $('previewBox').innerHTML = '<b>解析结果预览（' + items.length + ' 条）</b><table>' + head + body + '</table>' +
-    '<div class="muted" style="margin-top:8px">工资项列：' + (extraKeys.join('、') || '无（只有基础列）') + '</div>';
+  $('previewBox').innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>预览（共 ' + items.length + ' 条）</b><span class="muted">确认无误后点击上传</span></div>' +
+    '<div style="max-height:300px;overflow-y:auto;border:1px solid #eef2f7;border-radius:6px"><table>' + head + body + '</table></div>';
   $('previewBox').style.display = 'block';
   $('uploadBtnRow').style.display = 'block';
 }
@@ -676,7 +681,7 @@ $('btnUpload').onclick = function(){
       if (res && res.ok) {
         toast('上传成功：新增 ' + res.inserted + ' 条，跳过重复 ' + res.skipped + ' 条');
         $('btnCancelUpload').click();
-        loadList(); loadStats(); loadWorkers(); loadMonths();
+        loadList(); loadStats(); loadMonths();
       } else {
         toast('上传失败：' + (res && res.msg ? res.msg : ''));
       }
@@ -688,33 +693,6 @@ $('btnUpload').onclick = function(){
     });
 };
 
-// ---------- 异议反馈列表 ----------
-function renderFeedbackList(){
-  var month = $('fbMonth').value || null;
-  var all = currentList.filter(function(r){ return r.status === 'question'; });
-  if (month) all = all.filter(function(r){ return r.month === month; });
-  var box = $('fbList'), empty = $('fbEmpty');
-  if (!all.length) { box.innerHTML = ''; empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  box.innerHTML = all.map(function(r){
-    var html = '<div class="fb-card">' +
-      '<div class="head">' +
-        '<span class="name">' + r.name + '（' + r.worker_no + '）</span>' +
-        '<span class="meta">' + r.month + '月 · ¥' + (r.total !== null ? r.total : '-') + ' · ' + fmtDate(r.feedback_time) + '</span>' +
-      '</div>' +
-      '<div class="fb-text">反馈：' + (r.feedback || '') + '</div>';
-    if (r.reply) html += '<div class="reply-text">回复：' + r.reply + '（' + fmtDate(r.reply_time) + '）</div>';
-    html += '<div class="op" style="margin-top:8px">' +
-      '<button class="b" onclick="showDetail(' + r.id + ')">明细</button>' +
-      '<button class="g" onclick="openReply(' + r.id + ')">' + (r.reply ? '修改回复' : '回复') + '</button>' +
-      '<button class="r" onclick="resetRec(' + r.id + ')">重置</button>' +
-    '</div>';
-    html += '</div>';
-    return html;
-  }).join('');
-}
-$('fbMonth').onchange = renderFeedbackList;
-
 // ---------- 工人列表 ----------
 function loadWorkers(){
   rpc('jx_admin_workers', { p_pin: adminPin })
@@ -723,7 +701,7 @@ function loadWorkers(){
       var box = $('workerList');
       if (!list.length) { box.innerHTML = '<span class="muted">暂无（上传工资后自动创建）</span>'; return; }
       box.innerHTML = list.map(function(w){ return '<span>' + w.worker_no + ' · ' + w.name + '</span>'; }).join('');
-    }).catch(function(e){ $('workerList').innerHTML = '<span style="color:#d93c3c">加载失败</span>'; });
+    }).catch(function(e){ $('workerList').innerHTML = '<span class="red">加载失败</span>'; });
 }
 
 // ---------- 修改口令 ----------
@@ -782,17 +760,52 @@ $('btnExport').onclick = function(){
   XLSX.utils.book_append_sheet(wb, ws, '工资台账');
   XLSX.writeFile(wb, '工资绩效台账_' + new Date().toISOString().slice(0, 10) + '.xlsx');
 };
+function statusText(s){
+  return { pending: '待确认', confirmed: '已确认', auto_confirmed: '已确认', question: '有疑问' }[s] || s;
+}
+
+// ---------- 异议反馈列表 ----------
+function renderFeedbackList(){
+  var month = $('fbMonth').value || null;
+  var st = $('fbStatus2').value || null;
+  var all = currentList.filter(function(r){ return r.feedback; });
+  if (month) all = all.filter(function(r){ return r.month === month; });
+  if (st === 'unresolved') all = all.filter(function(r){ return !r.reply; });
+  if (st === 'resolved') all = all.filter(function(r){ return !!r.reply; });
+  var box = $('fbList'), empty = $('fbEmpty');
+  if (!all.length) { box.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  box.innerHTML = all.map(function(r){
+    var resolved = !!r.reply;
+    var stTag = resolved ? '<span class="tag done">已完成</span>' : '<span class="tag todo">待处理</span>';
+    var html = '<div class="fb-card' + (resolved ? ' done' : '') + '">' +
+      '<div class="head">' +
+        '<span class="name">' + r.name + '（' + r.worker_no + '）</span>' +
+        '<span class="meta">' + r.month + '月 · ¥' + (r.total !== null ? r.total : '-') + ' · ' + fmtDate(r.feedback_time) + ' ' + stTag + '</span>' +
+      '</div>' +
+      '<div class="fb-text">' + (r.feedback || '') + '</div>';
+    if (r.reply) html += '<div class="reply-text">' + r.reply + '（' + fmtDate(r.reply_time) + '）</div>';
+    html += '<div class="op" style="margin-top:8px">' +
+      '<button class="b" onclick="showDetail(' + r.id + ')">明细</button>' +
+      '<button class="g" onclick="openReply(' + r.id + ')">' + (r.reply ? '修改回复' : '回复') + '</button>' +
+    '</div></div>';
+    return html;
+  }).join('');
+}
+$('fbMonth').onchange = renderFeedbackList;
+$('fbStatus2').onchange = renderFeedbackList;
 
 // ---------- 导出异议清单 ----------
 $('btnExportFb').onclick = function(){
   var month = $('fbMonth').value || null;
-  var all = currentList.filter(function(r){ return r.status === 'question'; });
+  var all = currentList.filter(function(r){ return r.feedback; });
   if (month) all = all.filter(function(r){ return r.month === month; });
   if (!all.length) { toast('暂无异议数据可导出'); return; }
   if (!ensureXlsx()) { toast('导出组件加载中，请稍后再试'); return; }
   var arr = all.map(function(r){
     return {
       月份: r.month, 工号: r.worker_no, 姓名: r.name, 总额: r.total,
+      状态: r.reply ? '已完成' : '待处理',
       反馈内容: r.feedback || '', 反馈时间: fmtDate(r.feedback_time),
       管理员回复: r.reply || '', 回复时间: fmtDate(r.reply_time)
     };

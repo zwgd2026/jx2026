@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>装维绩效反馈系统 - 管理端</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; background:#f0f4f8; color:#1f2937; }
+  /* 顶栏 */
+  .topbar { background:linear-gradient(135deg,#0f2b5b 0%,#1a4a8a 100%); color:#fff; padding:13px 20px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:50; box-shadow:0 2px 8px rgba(15,43,91,.18); }
+  .topbar h1 { font-size:17px; font-weight:600; letter-spacing:1px; }
+  .topbar .sub { font-size:12px; opacity:.8; margin-top:2px; }
+  .topbar .logout { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:8px; padding:6px 14px; font-size:13px; cursor:pointer; white-space:nowrap; }
+  /* Tab 导航 */
+  .tabbar { background:#fff; display:flex; gap:0; border-bottom:2px solid #eef2f7; position:sticky; top:52px; z-index:40; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .tabbar::-webkit-scrollbar { display:none; }
+  .tab { padding:13px 22px; font-size:14px; font-weight:600; color:#64748b; cursor:pointer; white-space:nowrap; border-bottom:3px solid transparent; transition:all .2s; flex-shrink:0; }
+  .tab:hover { color:#0d3b6e; }
+  .tab.active { color:#0d3b6e; border-bottom-color:#0d3b6e; background:#f8faff; }
+  .tab .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#d93c3c; margin-left:2px; vertical-align:middle; display:none; }
+  .tab .dot.show { display:inline-block; }
+  /* 容器 */
+  .container { max-width:920px; margin:0 auto; padding:16px; }
+  .tab-page { display:none; }
+  .tab-page.active { display:block; }
+  /* 卡片 */
+  .card { background:#fff; border-radius:12px; box-shadow:0 1px 4px rgba(16,42,84,.08); padding:18px; margin-bottom:14px; }
+  .card h2 { font-size:15px; color:#0d3b6e; margin-bottom:14px; display:flex; align-items:center; }
+  .card h2 .tag { font-size:11px; background:#e8f1fe; color:#1a5dc9; border-radius:6px; padding:2px 8px; margin-left:8px; font-weight:400; }
+  /* 统计 */
+  .stat-grid { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .stat { flex:1; min-width:100px; background:#fff; border-radius:12px; padding:14px 8px; text-align:center; box-shadow:0 1px 4px rgba(16,42,84,.07); transition:transform .15s; }
+  .stat:active { transform:scale(.97); }
+  .stat .num { font-size:24px; font-weight:800; color:#0d3b6e; }
+  .stat .lab { font-size:12px; color:#6b7280; margin-top:4px; }
+  .stat.q .num { color:#d93c3c; }
+  .stat.p .num { color:#f59e0b; }
+  .stat.c .num { color:#14824c; }
+  /* 按钮 */
+  .btn { border:none; border-radius:8px; padding:9px 16px; font-size:13px; font-weight:600; cursor:pointer; transition:opacity .2s; }
+  .btn:active { opacity:.75; }
+  .btn-p { background:#0d3b6e; color:#fff; }
+  .btn-o { background:#fff; color:#0d3b6e; border:1px solid #b9c7dc; }
+  .btn-r { background:#fff; color:#d93c3c; border:1px solid #f3b4b4; }
+  .btn-s { background:#14824c; color:#fff; }
+  .btn-g { background:#eef1f4; color:#64748b; }
+  /* 上传区 */
+  .upload-area { border:2px dashed #b9c7dc; border-radius:10px; padding:28px 16px; text-align:center; color:#64748b; cursor:pointer; transition:all .2s; background:#fafcff; }
+  .upload-area:hover { border-color:#2e6bb0; color:#0d3b6e; background:#f2f7ff; }
+  .upload-area .big { font-size:28px; font-weight:800; color:#0d3b6e; }
+  .upload-area .txt { margin-top:8px; font-size:13px; }
+  .file-input { display:none; }
+  .preview-box { background:#f8fafc; border-radius:8px; padding:12px; font-size:13px; margin-top:12px; }
+  .preview-box table { font-size:12px; }
+  .preview-box th { background:#eef2f7; }
+  /* 工具栏 */
+  .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
+  .toolbar h2 { margin:0; }
+  .filters { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .filters select, .filters input { padding:8px 10px; border:1px solid #d1d9e6; border-radius:8px; font-size:13px; background:#fff; }
+  .filters .btn { padding:8px 14px; }
+  /* 表格 */
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { background:#f4f7fb; color:#475569; text-align:left; padding:9px 8px; font-weight:600; white-space:nowrap; }
+  td { padding:9px 8px; border-top:1px solid #eef2f7; vertical-align:middle; }
+  tr:hover td { background:#fafcff; }
+  .badge { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+  .b-pending { background:#e8f1fe; color:#1a5dc9; }
+  .b-confirmed { background:#e7f7ee; color:#14824c; }
+  .b-auto { background:#eef1f4; color:#64748b; }
+  .b-question { background:#fdecec; color:#d93c3c; }
+  .op { display:flex; gap:5px; flex-wrap:wrap; }
+  .op button { border:none; border-radius:6px; padding:5px 9px; font-size:12px; cursor:pointer; background:#f1f5f9; color:#334155; }
+  .op button.r { background:#fdecec; color:#d93c3c; }
+  .op button.g { background:#e7f7ee; color:#14824c; }
+  .op button.b { background:#e8f1fe; color:#1a5dc9; }
+  .mobile-table { display:none; }
+  .mb { margin-bottom:10px; }
+  .muted { color:#94a3b8; font-size:12px; }
+  .empty { text-align:center; color:#9ca3af; padding:30px 0; font-size:14px; }
+  .empty .icon { font-size:28px; margin-bottom:8px; color:#cbd5e1; }
+  .fb-text { background:#fdecec; border-left:3px solid #d93c3c; padding:7px 10px; border-radius:4px; font-size:12px; color:#7f1d1d; margin-top:4px; line-height:1.5; }
+  .reply-text { background:#fff8f0; border-left:3px solid #f59e0b; padding:7px 10px; border-radius:4px; font-size:12px; color:#78350f; margin-top:4px; line-height:1.5; }
+  /* 弹窗 */
+  .modal-mask { position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center; z-index:99; padding:20px; }
+  .modal { background:#fff; border-radius:14px; width:100%; max-width:440px; padding:22px; max-height:86vh; overflow-y:auto; }
+  .modal h3 { font-size:16px; margin-bottom:12px; color:#111827; }
+  .modal textarea, .modal input[type=text], .modal input[type=password] { width:100%; padding:10px; border:1px solid #d1d9e3; border-radius:9px; font-size:14px; margin-bottom:12px; outline:none; font-family:inherit; }
+  .modal textarea { min-height:90px; resize:vertical; }
+  .modal .btns { display:flex; gap:10px; }
+  .modal .btns button { flex:1; padding:10px 0; border-radius:9px; font-size:14px; cursor:pointer; border:none; }
+  .modal .cancel { background:#f1f3f5; color:#374151; }
+  .modal .ok { background:#0d3b6e; color:#fff; }
+  .modal .ok.red { background:#d93c3c; }
+  .dl { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed #e5e7eb; font-size:14px; }
+  .dl:last-child { border-bottom:none; }
+  .dk { color:#6b7280; }
+  .dv { font-weight:600; color:#111827; }
+  /* 登录 */
+  .login-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(150deg,#0b2550 0%,#1a4a8a 55%,#2e6bb0 100%); padding:20px; }
+  .login-box { width:100%; max-width:360px; background:#fff; border-radius:16px; padding:30px 26px; box-shadow:0 18px 40px rgba(0,0,0,.25); }
+  .login-box .logo { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#0d3b6e,#2e6bb0); display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px; font-weight:800; margin-bottom:14px; }
+  .login-box h2 { font-size:19px; color:#0d3b6e; margin-bottom:4px; }
+  .login-box .tip { font-size:13px; color:#6b7280; margin-bottom:20px; }
+  .login-box input { width:100%; padding:11px 12px; border:1px solid #d1d9e6; border-radius:9px; font-size:15px; outline:none; margin-bottom:14px; }
+  .btn-login { width:100%; background:linear-gradient(135deg,#0d3b6e,#2563a8); color:#fff; border:none; border-radius:9px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer; }
+  .err { color:#d93c3c; font-size:13px; margin-top:8px; display:none; }
+  .toast { position:fixed; left:50%; bottom:40px; transform:translateX(-50%); background:rgba(17,24,39,.88); color:#fff; padding:9px 18px; border-radius:8px; font-size:13px; z-index:120; display:none; }
+  .footer { text-align:center; color:#9ca3af; font-size:12px; padding:16px 0 24px; }
+  /* 设置页 */
+  .setting-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .setting-row input { padding:9px 12px; border:1px solid #d1d9e6; border-radius:8px; font-size:14px; flex:1; min-width:120px; }
+  .info-box { background:#f0f7ff; border:1px solid #c7dbf3; border-radius:10px; padding:14px 16px; font-size:13px; color:#1e3a5f; line-height:1.6; margin-bottom:14px; }
+  .info-box b { color:#0d3b6e; }
+  .workers { font-size:13px; color:#475569; line-height:2; }
+  .workers span { display:inline-block; background:#f1f5f9; border-radius:6px; padding:3px 10px; margin:3px 4px 0 0; }
+  .help-list { padding-left:18px; font-size:13px; color:#475569; line-height:2; }
+  .help-list li { margin:4px 0; }
+  .section-title { font-size:14px; font-weight:700; color:#0d3b6e; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eef2f7; }
+  /* 异议专用 */
+  .fb-card { background:#fff; border-radius:10px; padding:14px 16px; margin-bottom:10px; border-left:4px solid #d93c3c; box-shadow:0 1px 3px rgba(16,42,84,.06); }
+  .fb-card .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px; }
+  .fb-card .name { font-weight:700; font-size:14px; color:#111827; }
+  .fb-card .meta { font-size:12px; color:#94a3b8; }
+  @media (max-width:640px){
+    .desktop-table { display:none; }
+    .mobile-table { display:table; }
+    .mobile-card { background:#f8fafc; border-radius:8px; padding:10px; margin-bottom:8px; font-size:13px; }
+    .mobile-card .row { display:flex; justify-content:space-between; padding:3px 0; }
+    .mobile-card .row .k { color:#6b7280; }
+    .mobile-card .row .v { font-weight:600; }
+    .op { margin-top:6px; }
+    .tab { padding:11px 16px; font-size:13px; }
+    .stat { min-width:80px; }
+    .stat .num { font-size:20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 登录 -->
+<div id="loginView" class="login-wrap">
+  <div class="login-box">
+    <div class="logo">管</div>
+    <h2>绩效管理后台</h2>
+    <div class="tip">管理员专用 · 请输入管理口令</div>
+    <input id="loginPin" type="password" placeholder="请输入管理口令">
+    <button id="btnLogin" class="btn-login">登 录</button>
+    <div id="loginErr" class="err"></div>
+  </div>
+</div>
+
+<!-- 主界面 -->
+<div id="mainView" style="display:none">
+  <div class="topbar">
+    <div>
+      <h1>装维绩效反馈系统 · 管理端</h1>
+      <div class="sub">管理员</div>
+    </div>
+    <button class="logout" id="btnLogout">退出</button>
+  </div>
+
+  <!-- Tab 导航 -->
+  <div class="tabbar">
+    <div class="tab active" data-tab="overview">账期总览</div>
+    <div class="tab" data-tab="detail">明细管理</div>
+    <div class="tab" data-tab="feedback">异议反馈<span class="dot" id="fbDot"></span></div>
+    <div class="tab" data-tab="settings">系统设置</div>
+  </div>
+
+  <div class="container">
+    <!-- ===== Tab1: 账期总览 ===== -->
+    <div class="tab-page active" data-page="overview">
+      <div class="stat-grid">
+        <div class="stat"><div class="num" id="stTotal">0</div><div class="lab">工资记录</div></div>
+        <div class="stat p"><div class="num" id="stPending">0</div><div class="lab">待确认</div></div>
+        <div class="stat c"><div class="num" id="stConfirmed">0</div><div class="lab">已确认</div></div>
+        <div class="stat q"><div class="num" id="stQuestion">0</div><div class="lab">有疑问</div></div>
+        <div class="stat"><div class="num" id="stWorkers">0</div><div class="lab">装维员</div></div>
+      </div>
+      <div class="card">
+        <h2>上传工资明细</h2>
+        <div class="upload-area" id="uploadArea">
+          <div class="big">+</div>
+          <div class="txt">点击选择 Excel / CSV 文件</div>
+          <div class="muted" style="margin-top:6px">工号、姓名、月份为必含列，其余列自动作为工资明细项</div>
+        </div>
+        <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv">
+        <div id="previewBox" class="preview-box" style="display:none"></div>
+        <div id="uploadBtnRow" style="display:none;margin-top:12px">
+          <button class="btn btn-s" id="btnUpload">确认上传</button>
+          <button class="btn btn-o" id="btnCancelUpload" style="margin-left:8px">取消</button>
+        </div>
+        <div class="muted" style="margin-top:10px">
+          识别规则：工号列（工号/编号）、姓名列、月份列（如 2026-09）、合计列（总额/合计/实发/应发）。<br>
+          未识别到合计列时自动把数字列求和作为总额。重复上传同一记录会自动跳过。
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Tab2: 明细管理 ===== -->
+    <div class="tab-page" data-page="detail">
+      <div class="card">
+        <div class="toolbar">
+          <h2>工资记录</h2>
+          <div class="filters">
+            <select id="fMonth"><option value="">全部月份</option></select>
+            <select id="fStatus">
+              <option value="">全部状态</option>
+              <option value="pending">待确认</option>
+              <option value="confirmed">已确认</option>
+              <option value="auto_confirmed">已自动确认</option>
+              <option value="question">有疑问</option>
+            </select>
+            <button class="btn btn-o" id="btnExport">导出台账</button>
+          </div>
+        </div>
+        <table class="desktop-table">
+          <thead><tr>
+            <th>月份</th><th>工号</th><th>姓名</th><th>总额</th><th>状态</th><th>反馈/回复</th><th>操作</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="mobile-table" id="mbody"></div>
+        <div id="listEmpty" class="empty" style="display:none">
+          <div class="icon">&#128193;</div>
+          <div>暂无记录，请先上传工资明细</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Tab3: 异议反馈 ===== -->
+    <div class="tab-page" data-page="feedback">
+      <div class="card">
+        <div class="toolbar">
+          <h2>异议反馈</h2>
+          <div class="filters">
+            <select id="fbMonth"><option value="">全部月份</option></select>
+            <button class="btn btn-o" id="btnExportFb">导出异议清单</button>
+          </div>
+        </div>
+        <div id="fbList"></div>
+        <div id="fbEmpty" class="empty" style="display:none">
+          <div class="icon">&#9989;</div>
+          <div>暂无异议反馈，状态良好</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Tab4: 系统设置 ===== -->
+    <div class="tab-page" data-page="settings">
+      <div class="card">
+        <div class="section-title">自动确认规则</div>
+        <div class="info-box">
+          员工超过 <b>3 天</b> 未确认的工资记录，系统将自动确认。<br>
+          此规则由数据库端执行，确保即使员工不登录也能按时确认。
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">修改管理口令</div>
+        <div class="setting-row" style="margin-bottom:8px">
+          <input type="password" id="oldPin" placeholder="当前口令" style="flex:1;min-width:120px;padding:9px;border:1px solid #d1d9e6;border-radius:8px">
+        </div>
+        <div class="setting-row" style="margin-bottom:10px">
+          <input type="password" id="newPin" placeholder="新口令（至少4位）" style="flex:1;min-width:140px;padding:9px;border:1px solid #d1d9e6;border-radius:8px">
+        </div>
+        <button class="btn btn-p" id="btnChpw">修改口令</button>
+        <div class="muted" style="margin-top:8px">建议使用与工单系统不同的口令，并妥善保管。</div>
+      </div>
+      <div class="card">
+        <div class="section-title">装维员账号</div>
+        <div class="workers" id="workerList">加载中...</div>
+        <div class="muted" style="margin-top:8px">装维员账号由系统根据上传的工号+姓名自动创建，无需手工维护。</div>
+      </div>
+      <div class="card">
+        <div class="section-title">使用说明</div>
+        <ol class="help-list">
+          <li>每月发绩效前，在「账期总览」上传工资 Excel，系统自动创建工资记录。</li>
+          <li>装维员在手机端凭工号+姓名登录，查看本人明细并确认；有疑问可提交异议。</li>
+          <li>超过 3 天未确认的记录，系统自动确认。</li>
+          <li>在「明细管理」可查看进度、搜索、线下核实后手动标记确认、导出留档。</li>
+          <li>在「异议反馈」集中处理员工的疑问，回复后员工可在手机端查看。</li>
+          <li>在「系统设置」可修改管理口令、查看装维员账号。</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="footer">装维绩效反馈系统 · 数据存储于云端数据库 · 员工3天未确认自动确认</div>
+  </div>
+</div>
+
+<!-- 弹窗：回复 -->
+<div id="replyModal" class="modal-mask">
+  <div class="modal">
+    <h3>回复装维员疑问</h3>
+    <div id="replyFbText" class="fb-text" style="margin-bottom:10px"></div>
+    <textarea id="replyText" placeholder="请输入回复内容"></textarea>
+    <div class="btns">
+      <button class="cancel" id="replyCancel">取消</button>
+      <button class="ok" id="replyOk">提交回复</button>
+    </div>
+  </div>
+</div>
+
+<!-- 弹窗：明细 -->
+<div id="detailModal" class="modal-mask">
+  <div class="modal">
+    <h3 id="detailTitle">工资明细</h3>
+    <div id="detailBody"></div>
+    <div class="btns"><button class="cancel" id="detailClose">关 闭</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.staticfile.org/xlsx/0.18.5/xlsx.full.min.js" onerror="onXlsxFail()"></script>
+<script>
+var XLSX_READY = false;
+function onXlsxFail(){
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload = function(){ XLSX_READY = true; };
+  document.head.appendChild(s);
+}
+function ensureXlsx(){
+  if (typeof XLSX !== 'undefined') XLSX_READY = true;
+  return XLSX_READY || typeof XLSX !== 'undefined';
+}
+
+// ================= 配置 =================
+var SUPABASE_URL = 'https://spdruwsigkbefopzoifo.supabase.co/rest/v1';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwZHJ1d3NpZ2tiZWZvcHpvaWZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODI5MjAsImV4cCI6MjEwNjE1ODkyMH0.MFQQ_I2l8mkxMKtnxym_aM3p4-nFHMbbgmoIihZb7n4';
+// ========================================
+
+var adminPin = '';
+var currentList = [];
+var pendingUpload = null;
+
+function $(id){ return document.getElementById(id); }
+function toast(msg){
+  var t = $('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._t);
+  t._t = setTimeout(function(){ t.style.display = 'none'; }, 2600);
+}
+
+async function rpc(fn, args){
+  var res = await fetch(SUPABASE_URL + '/rpc/' + fn, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args || {})
+  });
+  if (!res.ok) { var txt = await res.text(); throw new Error('请求失败(' + res.status + ') ' + txt.slice(0,120)); }
+  var ct = res.headers.get('content-type') || '';
+  return ct.indexOf('json') >= 0 ? res.json() : res.text();
+}
+
+function fmtDate(iso){
+  if (!iso) return '-';
+  var d = new Date(iso);
+  var p = function(n){ return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
+function badge(s){
+  var m = { pending:['待确认','b-pending'], confirmed:['已确认','b-confirmed'], auto_confirmed:['已自动确认','b-auto'], question:['有疑问','b-question'] };
+  var x = m[s] || [s,'b-auto'];
+  return '<span class="badge ' + x[1] + '">' + x[0] + '</span>';
+}
+
+function statusText(s){
+  return { pending: '待确认', confirmed: '已确认', auto_confirmed: '已自动确认', question: '有疑问' }[s] || s;
+}
+
+// ---------- Tab 切换 ----------
+var tabs = document.querySelectorAll('.tab');
+var pages = document.querySelectorAll('.tab-page');
+tabs.forEach(function(tab){
+  tab.onclick = function(){
+    var name = tab.dataset.tab;
+    tabs.forEach(function(t){ t.classList.remove('active'); });
+    pages.forEach(function(p){ p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.querySelector('.tab-page[data-page="' + name + '"]').classList.add('active');
+    if (name === 'feedback') renderFeedbackList();
+  };
+});
+
+// ---------- 登录 ----------
+$('btnLogin').onclick = function(){
+  var pin = $('loginPin').value.trim();
+  if (!pin) { $('loginErr').style.display='block'; $('loginErr').textContent='请输入口令'; return; }
+  rpc('jx_admin_login', { p_pin: pin })
+    .then(function(ok){
+      if (ok) {
+        adminPin = pin;
+        try { localStorage.setItem('jx_admin_pin', pin); } catch(e){}
+        enterMain();
+      } else {
+        $('loginErr').style.display='block'; $('loginErr').textContent='口令错误，请重试';
+      }
+    })
+    .catch(function(e){ $('loginErr').style.display='block'; $('loginErr').textContent='登录失败：' + e.message; });
+};
+function enterMain(){
+  $('loginView').style.display = 'none';
+  $('mainView').style.display = 'block';
+  loadStats();
+  loadList();
+  loadWorkers();
+  loadMonths();
+}
+$('btnLogout').onclick = function(){
+  try { localStorage.removeItem('jx_admin_pin'); } catch(e){}
+  adminPin = '';
+  $('mainView').style.display = 'none';
+  $('loginView').style.display = 'flex';
+  $('loginPin').value=''; $('loginErr').style.display='none';
+};
+$('loginPin').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('btnLogin').click(); });
+
+// ---------- 统计 ----------
+function loadStats(){
+  rpc('jx_admin_stats', { p_pin: adminPin })
+    .then(function(s){
+      if (!s || !s.total && !s.workers) return;
+      $('stTotal').textContent = s.total || 0;
+      $('stPending').textContent = s.pending || 0;
+      $('stConfirmed').textContent = s.confirmed || 0;
+      $('stQuestion').textContent = s.question || 0;
+      $('stWorkers').textContent = s.workers || 0;
+      // 有异议时显示红点
+      var dot = $('fbDot');
+      if (s.question > 0) dot.classList.add('show'); else dot.classList.remove('show');
+    }).catch(function(){});
+}
+
+function loadMonths(){
+  rpc('jx_admin_stats', { p_pin: adminPin })
+    .then(function(s){
+      var cur1 = $('fMonth').value, cur2 = $('fbMonth').value;
+      var html = '<option value="">全部月份</option>';
+      (s.months || []).forEach(function(m){ html += '<option value="' + m + '">' + m + ' 月</option>'; });
+      $('fMonth').innerHTML = html;
+      $('fbMonth').innerHTML = html;
+      $('fMonth').value = cur1;
+      $('fbMonth').value = cur2;
+    }).catch(function(){});
+}
+
+// ---------- 列表 ----------
+async function loadList(){
+  var month = $('fMonth').value || null;
+  var status = $('fStatus').value || null;
+  var rows;
+  try {
+    rows = await rpc('jx_admin_list', { p_pin: adminPin, p_month: month, p_status: status });
+  } catch(e){ toast('加载失败：' + e.message); return; }
+  rows = rows || [];
+  currentList = rows;
+  var tb = $('tbody'), mb = $('mbody');
+  tb.innerHTML = ''; mb.innerHTML = '';
+  $('listEmpty').style.display = rows.length ? 'none' : 'block';
+  if (!rows.length) return;
+  rows.forEach(function(r){
+    var fb = '';
+    if (r.feedback) {
+      fb = '<div class="fb-text">反馈：' + r.feedback + '</div>';
+      if (r.reply) fb += '<div class="reply-text">回复：' + r.reply + '</div>';
+    }
+    var op = '<div class="op">' +
+      '<button class="b" onclick="showDetail(' + r.id + ')">明细</button>' +
+      (r.status === 'question' ? '<button class="g" onclick="openReply(' + r.id + ')">回复</button>' : '') +
+      '<button class="r" onclick="resetRec(' + r.id + ')">重置</button>' +
+      '<button class="r" onclick="delRec(' + r.id + ')">删除</button>' +
+    '</div>';
+    tb.innerHTML += '<tr>' +
+      '<td>' + r.month + '</td>' +
+      '<td>' + r.worker_no + '</td>' +
+      '<td>' + r.name + '</td>' +
+      '<td>' + (r.total !== null ? r.total : '-') + '</td>' +
+      '<td>' + badge(r.status) + '</td>' +
+      '<td>' + fb + '</td>' +
+      '<td>' + op + '</td>' +
+    '</tr>';
+    mb.innerHTML += '<div class="mobile-card">' +
+      '<div class="row"><span class="k">' + r.month + '月 · ' + r.name + '（' + r.worker_no + '）</span>' + badge(r.status) + '</div>' +
+      '<div class="row"><span class="k">总额</span><span class="v">¥ ' + (r.total !== null ? r.total : '-') + '</span></div>' +
+      fb + op +
+    '</div>';
+  });
+}
+
+$('fMonth').onchange = loadList;
+$('fStatus').onchange = loadList;
+
+function showDetail(id){
+  var r = currentList.find(function(x){ return x.id === id; });
+  if (!r) return;
+  var body = '';
+  var keys = Object.keys(r.items || {});
+  keys.forEach(function(k){ body += '<div class="dl"><span class="dk">' + k + '</span><span class="dv">' + r.items[k] + '</span></div>'; });
+  body += '<div class="dl"><span class="dk">上传时间</span><span class="dv">' + fmtDate(r.created_at) + '</span></div>' +
+          '<div class="dl"><span class="dk">确认时间</span><span class="dv">' + fmtDate(r.confirm_time) + '</span></div>' +
+          '<div class="dl"><span class="dk">批次</span><span class="dv">' + (r.batch_id || '-') + '</span></div>';
+  $('detailTitle').textContent = r.month + '月 · ' + r.name + ' 工资明细（¥' + (r.total !== null ? r.total : '-') + '）';
+  $('detailBody').innerHTML = body;
+  $('detailModal').style.display = 'flex';
+}
+$('detailClose').onclick = function(){ $('detailModal').style.display = 'none'; };
+
+// ---------- 回复 / 重置 / 删除 ----------
+var replyId = null;
+function openReply(id){
+  var r = currentList.find(function(x){ return x.id === id; });
+  if (!r) return;
+  replyId = id;
+  $('replyFbText').textContent = '装维员 ' + r.name + ' 的反馈：' + (r.feedback || '');
+  $('replyText').value = r.reply || '';
+  $('replyModal').style.display = 'flex';
+}
+$('replyCancel').onclick = function(){ $('replyModal').style.display = 'none'; };
+$('replyOk').onclick = function(){
+  var txt = $('replyText').value.trim();
+  if (!txt) { toast('请输入回复内容'); return; }
+  rpc('jx_admin_reply', { p_pin: adminPin, p_rec_id: replyId, p_reply: txt })
+    .then(function(ok){
+      if (ok) { $('replyModal').style.display = 'none'; toast('回复成功'); loadList(); loadStats(); }
+      else toast('回复失败');
+    }).catch(function(e){ toast(e.message); });
+};
+
+function resetRec(id){
+  if (!confirm('确定将该记录重置为【待确认】吗？重置后将重新计时3天自动确认。')) return;
+  rpc('jx_admin_reset', { p_pin: adminPin, p_rec_id: id })
+    .then(function(ok){ if (ok) { toast('已重置'); loadList(); loadStats(); } else toast('操作失败'); })
+    .catch(function(e){ toast(e.message); });
+}
+function delRec(id){
+  if (!confirm('确定删除该条工资记录吗？删除后不可恢复，员工将无法查看。')) return;
+  rpc('jx_admin_delete', { p_pin: adminPin, p_rec_id: id })
+    .then(function(ok){ if (ok) { toast('已删除'); loadList(); loadStats(); } else toast('操作失败'); })
+    .catch(function(e){ toast(e.message); });
+}
+
+// ---------- 上传 ----------
+$('uploadArea').onclick = function(){ $('fileInput').click(); };
+$('fileInput').onchange = function(e){
+  var f = e.target.files[0];
+  if (!f) return;
+  if (!ensureXlsx()) { toast('表格解析组件加载中，请稍后再试'); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try {
+      var wb = XLSX.read(ev.target.result, { type: 'array' });
+      var ws = wb.Sheets[wb.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      if (!rows.length) { toast('文件中没有数据'); return; }
+      var mapped = mapColumns(rows);
+      if (!mapped.ok) { toast(mapped.msg); return; }
+      pendingUpload = mapped;
+      renderPreview(mapped, rows);
+    } catch(err){
+      toast('解析失败：' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(f);
+};
+
+function mapColumns(rows){
+  var sample = rows[0];
+  var keys = Object.keys(sample);
+  var findKey = function(regex){
+    for (var i = 0; i < keys.length; i++) {
+      if (regex.test(String(keys[i]).trim())) return keys[i];
+    }
+    return null;
+  };
+  var wk = findKey(/^(工号|员工编号|编号|员工号|工作号)$|工号|worker|work_?no/i);
+  var nk = findKey(/^姓名$|^name$|姓名|员工名/i);
+  var mk = findKey(/^月份$|^工资月份$|^month$|月份|工资月/i);
+  if (!wk || !nk || !mk) {
+    return { ok: false, msg: '未识别到工号/姓名/月份列，请检查表头（需要包含：工号、姓名、月份）' };
+  }
+  var tk = findKey(/^总额$|^合计$|^实发$|^应发$|^total$|^实发工资$|^应发工资$|工资总额|金额合计/i);
+  return { ok: true, workerKey: wk, nameKey: nk, monthKey: mk, totalKey: tk, rows: rows, keys: keys };
+}
+
+function normMonth(v){
+  if (typeof v === 'number' && v > 20000 && v < 80000) {
+    var d0 = new Date(Math.round((v - 25569) * 86400 * 1000));
+    if (!isNaN(d0.getTime()) && d0.getFullYear() >= 2000 && d0.getFullYear() <= 2100) {
+      var pz = function(n){ return (n < 10 ? '0' : '') + n; };
+      return d0.getFullYear() + '-' + pz(d0.getMonth() + 1);
+    }
+  }
+  var s = String(v).trim();
+  if (!s) return null;
+  if (/^\d{6}$/.test(s)) return s.slice(0,4) + '-' + s.slice(4);
+  if (/^\d{4}-\d{1,2}$/.test(s)) {
+    var p = s.split('-');
+    return p[0] + '-' + (p[1].length === 1 ? '0' + p[1] : p[1]);
+  }
+  if (/^\d{4}\/\d{1,2}$/.test(s)) {
+    var q = s.split('/');
+    return q[0] + '-' + (q[1].length === 1 ? '0' + q[1] : q[1]);
+  }
+  if (/^\d{4}年\d{1,2}月?$/.test(s)) {
+    var m = s.match(/^(\d{4})年(\d{1,2})月?$/);
+    return m[1] + '-' + (m[2].length === 1 ? '0' + m[2] : m[2]);
+  }
+  var d = new Date(s);
+  if (!isNaN(d.getTime()) && d.getFullYear() > 2000 && /^\d/.test(s)) {
+    var p2 = function(n){ return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + p2(d.getMonth()+1);
+  }
+  return s;
+}
+
+function renderPreview(mapped, rows){
+  var extraKeys = [];
+  mapped.keys.forEach(function(k){
+    if (k !== mapped.workerKey && k !== mapped.nameKey && k !== mapped.monthKey && k !== mapped.totalKey) extraKeys.push(k);
+  });
+  mapped.extraKeys = extraKeys;
+  var items = rows.map(function(r){
+    var item = {};
+    extraKeys.forEach(function(k){ item[k] = r[k] !== '' && r[k] !== undefined ? r[k] : null; });
+    return {
+      worker_no: String(r[mapped.workerKey]).trim(),
+      name: String(r[mapped.nameKey]).trim(),
+      month: normMonth(r[mapped.monthKey]),
+      total: mapped.totalKey ? (isNaN(Number(r[mapped.totalKey])) ? null : Number(r[mapped.totalKey])) : null,
+      items: item
+    };
+  }).filter(function(x){ return x.worker_no && x.name && x.month; });
+  if (!mapped.totalKey) {
+    items.forEach(function(x){
+      var sum = 0;
+      extraKeys.forEach(function(k){
+        var v = Number(x.items[k]);
+        if (!isNaN(v)) sum += v;
+      });
+      x.total = sum;
+    });
+  }
+  mapped.items = items;
+  var head = '<tr><th>#</th><th>工号</th><th>姓名</th><th>月份</th><th>总额</th></tr>';
+  var body = '';
+  var show = items.slice(0, 5);
+  show.forEach(function(x, i){
+    body += '<tr><td>' + (i+1) + '</td><td>' + x.worker_no + '</td><td>' + x.name + '</td><td>' + x.month + '</td><td>' + x.total + '</td></tr>';
+  });
+  if (items.length > 5) body += '<tr><td colspan="5" class="muted">… 共 ' + items.length + ' 条，前 5 条预览</td></tr>';
+  $('previewBox').innerHTML = '<b>解析结果预览（' + items.length + ' 条）</b><table>' + head + body + '</table>' +
+    '<div class="muted" style="margin-top:8px">工资项列：' + (extraKeys.join('、') || '无（只有基础列）') + '</div>';
+  $('previewBox').style.display = 'block';
+  $('uploadBtnRow').style.display = 'block';
+}
+$('btnCancelUpload').onclick = function(){
+  pendingUpload = null;
+  $('previewBox').style.display = 'none';
+  $('uploadBtnRow').style.display = 'none';
+  $('fileInput').value = '';
+};
+$('btnUpload').onclick = function(){
+  if (!pendingUpload || !pendingUpload.items.length) { toast('没有可上传的数据'); return; }
+  var batch = 'B' + new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
+  var items = pendingUpload.items;
+  $('btnUpload').disabled = true;
+  $('btnUpload').textContent = '上传中…';
+  rpc('jx_admin_upload', { p_pin: adminPin, p_rows: items, p_batch_id: batch })
+    .then(function(res){
+      if (res && res.ok) {
+        toast('上传成功：新增 ' + res.inserted + ' 条，跳过重复 ' + res.skipped + ' 条');
+        $('btnCancelUpload').click();
+        loadList(); loadStats(); loadWorkers(); loadMonths();
+      } else {
+        toast('上传失败：' + (res && res.msg ? res.msg : ''));
+      }
+    })
+    .catch(function(e){ toast('上传失败：' + e.message); })
+    .finally(function(){
+      $('btnUpload').disabled = false;
+      $('btnUpload').textContent = '确认上传';
+    });
+};
+
+// ---------- 异议反馈列表 ----------
+function renderFeedbackList(){
+  var month = $('fbMonth').value || null;
+  var all = currentList.filter(function(r){ return r.status === 'question'; });
+  if (month) all = all.filter(function(r){ return r.month === month; });
+  var box = $('fbList'), empty = $('fbEmpty');
+  if (!all.length) { box.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  box.innerHTML = all.map(function(r){
+    var html = '<div class="fb-card">' +
+      '<div class="head">' +
+        '<span class="name">' + r.name + '（' + r.worker_no + '）</span>' +
+        '<span class="meta">' + r.month + '月 · ¥' + (r.total !== null ? r.total : '-') + ' · ' + fmtDate(r.feedback_time) + '</span>' +
+      '</div>' +
+      '<div class="fb-text">反馈：' + (r.feedback || '') + '</div>';
+    if (r.reply) html += '<div class="reply-text">回复：' + r.reply + '（' + fmtDate(r.reply_time) + '）</div>';
+    html += '<div class="op" style="margin-top:8px">' +
+      '<button class="b" onclick="showDetail(' + r.id + ')">明细</button>' +
+      '<button class="g" onclick="openReply(' + r.id + ')">' + (r.reply ? '修改回复' : '回复') + '</button>' +
+      '<button class="r" onclick="resetRec(' + r.id + ')">重置</button>' +
+    '</div>';
+    html += '</div>';
+    return html;
+  }).join('');
+}
+$('fbMonth').onchange = renderFeedbackList;
+
+// ---------- 工人列表 ----------
+function loadWorkers(){
+  rpc('jx_admin_workers', { p_pin: adminPin })
+    .then(function(list){
+      list = list || [];
+      var box = $('workerList');
+      if (!list.length) { box.innerHTML = '<span class="muted">暂无（上传工资后自动创建）</span>'; return; }
+      box.innerHTML = list.map(function(w){ return '<span>' + w.worker_no + ' · ' + w.name + '</span>'; }).join('');
+    }).catch(function(e){ $('workerList').innerHTML = '<span style="color:#d93c3c">加载失败</span>'; });
+}
+
+// ---------- 修改口令 ----------
+$('btnChpw').onclick = function(){
+  var oldP = $('oldPin').value.trim();
+  var newP = $('newPin').value.trim();
+  if (!oldP || !newP) { toast('请填写当前口令和新口令'); return; }
+  if (newP.length < 4) { toast('新口令至少4位'); return; }
+  rpc('jx_admin_changepw', { p_pin: oldP, p_new_pin: newP })
+    .then(function(ok){
+      if (ok) {
+        adminPin = newP;
+        try { localStorage.setItem('jx_admin_pin', newP); } catch(e){}
+        $('oldPin').value = ''; $('newPin').value = '';
+        toast('口令已修改');
+      } else toast('当前口令不正确或新口令过短');
+    }).catch(function(e){ toast(e.message); });
+};
+
+// 弹窗关闭（点遮罩）
+['replyModal','detailModal'].forEach(function(id){
+  document.getElementById(id).addEventListener('click', function(e){ if (e.target === this) this.style.display = 'none'; });
+});
+
+// 自动登录
+(function(){
+  try {
+    var saved = localStorage.getItem('jx_admin_pin');
+    if (saved) {
+      rpc('jx_admin_login', { p_pin: saved })
+        .then(function(ok){
+          if (ok) { adminPin = saved; enterMain(); }
+        }).catch(function(){});
+    }
+  } catch(e){}
+})();
+
+// ---------- 导出台账 ----------
+$('btnExport').onclick = function(){
+  if (!currentList.length) { toast('当前筛选无数据可导出'); return; }
+  if (!ensureXlsx()) { toast('导出组件加载中，请稍后再试'); return; }
+  var arr = currentList.map(function(r){
+    var o = { 月份: r.month, 工号: r.worker_no, 姓名: r.name, 总额: r.total, 状态: statusText(r.status) };
+    o.确认时间 = fmtDate(r.confirm_time);
+    o.反馈 = r.feedback || '';
+    o.反馈时间 = fmtDate(r.feedback_time);
+    o.管理员回复 = r.reply || '';
+    o.回复时间 = fmtDate(r.reply_time);
+    o.上传时间 = fmtDate(r.created_at);
+    var keys = Object.keys(r.items || {});
+    keys.forEach(function(k){ o[k] = r.items[k]; });
+    return o;
+  });
+  var ws = XLSX.utils.json_to_sheet(arr);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '工资台账');
+  XLSX.writeFile(wb, '工资绩效台账_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+};
+
+// ---------- 导出异议清单 ----------
+$('btnExportFb').onclick = function(){
+  var month = $('fbMonth').value || null;
+  var all = currentList.filter(function(r){ return r.status === 'question'; });
+  if (month) all = all.filter(function(r){ return r.month === month; });
+  if (!all.length) { toast('暂无异议数据可导出'); return; }
+  if (!ensureXlsx()) { toast('导出组件加载中，请稍后再试'); return; }
+  var arr = all.map(function(r){
+    return {
+      月份: r.month, 工号: r.worker_no, 姓名: r.name, 总额: r.total,
+      反馈内容: r.feedback || '', 反馈时间: fmtDate(r.feedback_time),
+      管理员回复: r.reply || '', 回复时间: fmtDate(r.reply_time)
+    };
+  });
+  var ws = XLSX.utils.json_to_sheet(arr);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '异议清单');
+  XLSX.writeFile(wb, '异议反馈清单_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+};
+</script>
+</body>
+</html>

@@ -7,39 +7,40 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; background:#f0f4f8; color:#1f2937; min-height:100vh; }
-  .topbar { background:linear-gradient(135deg,#0f2b5b 0%,#1a4a8a 100%); color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
-  .topbar h1 { font-size:18px; font-weight:600; letter-spacing:1px; }
-  .topbar .sub { font-size:12px; opacity:.8; margin-top:2px; }
-  .topbar .logout { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; }
+  .topbar { background:linear-gradient(135deg,#0f2b5b 0%,#1a4a8a 100%); color:#fff; padding:18px 20px; border-radius:0 0 16px 16px; }
+  .topbar .greet { font-size:18px; font-weight:600; letter-spacing:1px; }
+  .topbar .info { font-size:12px; opacity:.85; margin-top:6px; }
+  .topbar .info span { margin:0 4px; }
+  .topbar .logout { position:absolute; right:16px; top:16px; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:8px; padding:5px 12px; font-size:12px; cursor:pointer; }
   .container { max-width:680px; margin:0 auto; padding:16px; }
-  .card { background:#fff; border-radius:12px; box-shadow:0 1px 4px rgba(16,42,84,.08); padding:16px; margin-bottom:14px; }
-  .user-info { display:flex; justify-content:space-between; align-items:center; }
-  .user-info .name { font-size:17px; font-weight:600; color:#0d3b6e; }
-  .user-info .no { font-size:13px; color:#6b7280; }
-  .card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-  .card-head .month { font-size:16px; font-weight:700; color:#111827; }
-  .total { font-size:22px; font-weight:800; color:#0d3b6e; margin-bottom:10px; }
-  .total small { font-size:12px; color:#6b7280; font-weight:400; margin-left:4px; }
-  .items { background:#f8fafc; border-radius:8px; padding:10px 12px; font-size:14px; line-height:1.9; color:#374151; }
-  .items .row { display:flex; justify-content:space-between; }
-  .items .row .k { color:#6b7280; }
-  .items .row .v { font-weight:600; color:#0f3b6e; }
+  .card { background:#fff; border-radius:12px; box-shadow:0 1px 4px rgba(16,42,84,.08); padding:18px 16px; margin-bottom:14px; }
+  .card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+  .card-head .month { font-size:17px; font-weight:700; color:#111827; }
+  .card-deadline { font-size:13px; color:#b45309; font-weight:600; margin-bottom:12px; }
+  .item-list { font-size:14px; }
+  .item-list .dl { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #e5e7eb; }
+  .item-list .dl:last-child { border-bottom:none; }
+  .item-list .dk { color:#374151; }
+  .item-list .dv { font-weight:600; color:#111827; }
+  .total-bar { border-top:2px solid #0d3b6e; margin-top:4px; padding-top:10px; display:flex; justify-content:space-between; align-items:center; }
+  .total-bar .lab { font-size:14px; font-weight:700; color:#111827; }
+  .total-bar .val { font-size:22px; font-weight:800; color:#8b1538; }
+  .confirm-time { font-size:12px; color:#9ca3af; margin-top:8px; }
   .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
   .b-pending { background:#e8f1fe; color:#1a5dc9; }
   .b-confirmed { background:#e7f7ee; color:#14824c; }
-  .b-auto { background:#eef1f4; color:#64748b; }
   .b-question { background:#fdecec; color:#d93c3c; }
   .countdown { font-size:12px; color:#b45309; margin:8px 0 0; }
   .actions { display:flex; gap:10px; margin-top:12px; }
   .btn { flex:1; border:none; border-radius:8px; padding:10px 0; font-size:14px; font-weight:600; cursor:pointer; transition:opacity .2s; }
   .btn:active { opacity:.75; }
   .btn-confirm { background:#0d3b6e; color:#fff; }
-  .btn-question { background:#fff; color:#d93c3c; border:1px solid #f3b4b4; }
+  .btn-question { background:#fff; color:#0d3b6e; border:1px solid #b9c7dc; }
   .btn-disabled { background:#e5e7eb; color:#9ca3af; cursor:not-allowed; }
-  .reply-box { background:#fff8f0; border-left:4px solid #f59e0b; border-radius:8px; padding:12px 14px; margin-top:12px; }
-  .reply-box .tag { display:inline-block; background:#f59e0b; color:#fff; font-size:13px; font-weight:600; border-radius:6px; padding:3px 10px; margin-bottom:8px; letter-spacing:1px; }
-  .reply-box .content { font-size:17px; font-weight:600; color:#111827; line-height:1.6; word-break:break-all; }
-  .reply-box .time { font-size:13px; color:#9ca3af; margin-top:6px; }
+  .reply-box { background:#f8faff; border-left:3px solid #2e6bb0; border-radius:6px; padding:10px 12px; margin-top:10px; }
+  .reply-box .tag { display:inline-block; background:#e8f1fe; color:#1a5dc9; font-size:12px; font-weight:600; border-radius:4px; padding:2px 8px; margin-bottom:6px; }
+  .reply-box .content { font-size:13px; font-weight:400; color:#374151; line-height:1.6; word-break:break-all; }
+  .reply-box .time { font-size:12px; color:#9ca3af; margin-top:4px; }
   .empty { text-align:center; color:#9ca3af; padding:40px 0; font-size:14px; }
   .footer { text-align:center; color:#9ca3af; font-size:12px; padding:18px 0 26px; }
   /* 登录 */
@@ -64,7 +65,7 @@
   .modal .btns { display:flex; gap:10px; margin-top:14px; }
   .modal .btns button { flex:1; padding:10px 0; border-radius:9px; font-size:14px; cursor:pointer; border:none; }
   .modal .cancel { background:#f1f3f5; color:#374151; }
-  .modal .ok { background:#d93c3c; color:#fff; }
+  .modal .ok { background:#0d3b6e; color:#fff; }
   .cf-tip { font-size:15px; color:#475569; line-height:1.8; }
   .ok-blue { background:#0d3b6e !important; color:#fff !important; }
   .toast { position:fixed; left:50%; bottom:40px; transform:translateX(-50%); background:rgba(17,24,39,.88); color:#fff; padding:9px 18px; border-radius:8px; font-size:13px; z-index:120; display:none; }
@@ -82,23 +83,19 @@
   <div class="login-box">
     <div class="logo">绩</div>
     <h2>装维绩效反馈</h2>
-    <div class="sub">请使用工号和姓名登录</div>
     <div class="field"><label>工号</label><input id="loginNo" type="text" placeholder="请输入工号" autocomplete="off"></div>
     <div class="field"><label>姓名</label><input id="loginName" type="text" placeholder="请输入姓名" autocomplete="off"></div>
     <button id="btnLogin" class="btn-login">登 录</button>
     <div id="loginErr" class="err"></div>
-    <div class="hint">提示：工号和姓名由管理员统一发放<br>如有疑问请联系管理员</div>
   </div>
 </div>
 
 <!-- 主界面 -->
 <div id="mainView" style="display:none">
-  <div class="topbar">
-    <div>
-      <h1>装维绩效反馈</h1>
-      <div class="sub" id="userLine"></div>
-    </div>
+  <div class="topbar" style="position:relative">
     <button class="logout" id="btnLogout">退出</button>
+    <div class="greet" id="greetText">您好</div>
+    <div class="info" id="infoText"></div>
   </div>
   <div class="container">
     <div id="list"></div>
@@ -111,7 +108,7 @@
 <div id="cfModal" class="modal-mask">
   <div class="modal">
     <h3>确认本月工资无误？</h3>
-    <div class="cf-tip">确认后表示你已核对本月工资明细无误，<b>确认后将不能再提交疑问反馈</b>，请在核对后再确认。</div>
+    <div class="cf-tip">确认后表示你已核对本月工资明细无误，确认后将不能再提交疑问反馈，请在核对后再确认。</div>
     <div class="btns">
       <button class="cancel" id="cfCancel">再想想</button>
       <button class="ok ok-blue" id="cfOk">确认无误</button>
@@ -189,17 +186,20 @@ function fmtDate(iso){
 }
 
 function deadlineOf(rec){
-  return new Date(new Date(rec.created_at).getTime() + 72 * 3600 * 1000);
+  var d = new Date(rec.created_at);
+  d.setDate(d.getDate() + 3);
+  d.setHours(23, 59, 0, 0);
+  return d;
 }
 
 function statusBadge(s){
   var map = {
     pending: ['待确认', 'b-pending'],
     confirmed: ['已确认', 'b-confirmed'],
-    auto_confirmed: ['已自动确认', 'b-auto'],
+    auto_confirmed: ['已确认', 'b-confirmed'],
     question: ['有疑问', 'b-question']
   };
-  var m = map[s] || [s, 'b-auto'];
+  var m = map[s] || [s, 'b-confirmed'];
   return '<span class="badge ' + m[1] + '">' + m[0] + '</span>';
 }
 
@@ -214,12 +214,12 @@ function countdownStr(rec){
 }
 
 function renderItems(items){
-  if (!items) return '<div class="items"><div class="row"><span class="k">暂无明细</span></div></div>';
+  if (!items) return '<div class="item-list"><div class="dl"><span class="dk">暂无明细</span></div></div>';
   var keys = Object.keys(items);
-  if (!keys.length) return '<div class="items"><div class="row"><span class="k">暂无明细</span></div></div>';
-  var html = '<div class="items">';
+  if (!keys.length) return '<div class="item-list"><div class="dl"><span class="dk">暂无明细</span></div></div>';
+  var html = '<div class="item-list">';
   keys.forEach(function(k){
-    html += '<div class="row"><span class="k">' + k + '</span><span class="v">' + (items[k] !== null && items[k] !== undefined ? items[k] : '-') + '</span></div>';
+    html += '<div class="dl"><span class="dk">' + k + '</span><span class="dv">' + (items[k] !== null && items[k] !== undefined ? items[k] : '-') + '</span></div>';
   });
   html += '</div>';
   return html;
@@ -235,14 +235,13 @@ function renderList(records){
     var idKey = 'r' + idx;
     var fbBlock = '';
     if (r.feedback) {
-      fbBlock += '<div class="reply-box"><div class="tag" style="background:#d93c3c">你的反馈</div><div class="content">' + r.feedback + '</div><div class="time">' + fmtDate(r.feedback_time) + '</div></div>';
+      fbBlock += '<div class="reply-box"><div class="tag" style="background:#fdecec;color:#d93c3c">你的反馈</div><div class="content">' + r.feedback + '</div><div class="time">' + fmtDate(r.feedback_time) + '</div></div>';
     }
     if (r.reply) {
       fbBlock += '<div class="reply-box"><div class="tag">管理员回复</div><div class="content">' + r.reply + '</div><div class="time">' + fmtDate(r.reply_time) + '</div></div>';
     }
-  // 仅 pending 显示倒计时；已自动确认的记录带说明
-  var autoTip = (r.status === 'auto_confirmed') ? '<div class="countdown" style="color:#64748b">该记录已超过3天未确认，系统自动确认</div>' : '';
-  var actHtml;
+    var autoTip = (r.status === 'auto_confirmed') ? '<div class="countdown" style="color:#64748b">该记录已超过3天未确认，系统自动确认</div>' : '';
+    var actHtml;
     if (r.status === 'pending') {
       actHtml = '<button class="btn btn-confirm" onclick="doConfirm(' + r.id + ')">确认无误</button>' +
                 '<button class="btn btn-question" onclick="openFb(' + r.id + ')">有疑问</button>';
@@ -255,40 +254,37 @@ function renderList(records){
     } else {
       actHtml = '<button class="btn btn-disabled" disabled>已确认</button>';
     }
+    var dl = deadlineOf(r);
+    var dlStr = dl.getFullYear() + '年' + (dl.getMonth()+1) + '月' + dl.getDate() + '日';
+    var ctimeStr = r.confirm_time ? '确认时间：' + fmtDate(r.confirm_time) : '';
     html += '<div class="card" id="' + idKey + '">' +
-      '<div class="card-head"><span class="month">' + r.month + ' 月工资</span>' + statusBadge(r.status) + '</div>' +
-      '<div class="total">' + (r.total !== null ? '¥ ' + r.total : '—') + '<small>（' + r.month + '月）</small></div>' +
+      '<div class="card-head"><span class="month">' + r.month + '月绩效</span>' + statusBadge(r.status) + '</div>' +
+      '<div class="card-deadline">确认截止：' + dlStr + '</div>' +
       renderItems(r.items) +
-      countdownStr(r) + autoTip +
+      '<div class="total-bar"><span class="lab">合计（元）</span><span class="val">' + (r.total !== null ? r.total : '-') + '</span></div>' +
+      (ctimeStr ? '<div class="confirm-time">' + ctimeStr + '</div>' : '') +
+      autoTip +
       '<div class="actions">' + actHtml + '</div>' +
       fbBlock +
     '</div>';
   });
   box.innerHTML = html;
-  // 倒计时每秒实时刷新
-  clearInterval(window._cd);
-  window._cd = setInterval(function(){
-    var els = box.querySelectorAll('[data-cd]');
-    if (!els.length) return;
-    els.forEach(function(el){
-      var id = el.getAttribute('data-cd');
-      var rec = null;
-      for (var i = 0; i < records.length; i++) { if (records[i].id == id) { rec = records[i]; break; } }
-      if (!rec) return;
-      var left = deadlineOf(rec).getTime() - Date.now();
-      if (left <= 0) { loadData(); return; }
-      var h = Math.floor(left / 3600000);
-      var m = Math.floor((left % 3600000) / 60000);
-      var s = Math.floor((left % 60000) / 1000);
-      el.textContent = '距离自动确认还剩 ' + h + ' 小时 ' + m + ' 分 ' + s + ' 秒';
-    });
-  }, 1000);
 }
 
 async function loadData(){
   try {
     var recs = await rpc('jx_my_salaries', { p_worker_no: worker.worker_no, p_name: worker.name });
-    renderList(recs || []);
+    recs = recs || [];
+    renderList(recs);
+    // 更新顶部信息
+    if (recs.length) {
+      var latest = recs[0];
+      var dl = deadlineOf(latest);
+      var dlStr = dl.getFullYear() + '年' + (dl.getMonth()+1) + '月' + dl.getDate() + '日 23:59';
+      $('infoText').innerHTML = '本期：' + latest.month + '绩效 <span style="opacity:.5">|</span> 确认截止：' + dlStr;
+    } else {
+      $('infoText').textContent = '';
+    }
   } catch(e){
     toast('加载失败：' + e.message);
   }
@@ -375,7 +371,7 @@ $('btnLogin').onclick = function(){
 function enterMain(){
   $('loginView').style.display = 'none';
   $('mainView').style.display = 'block';
-  $('userLine').textContent = worker.name + '（工号 ' + worker.worker_no + '）';
+  $('greetText').textContent = worker.name + '，您好';
   loadData();
 }
 

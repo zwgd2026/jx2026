@@ -45,6 +45,8 @@
   .b-confirmed { background:#e7f7ee; color:#14824c; }
   .b-auto { background:#eef1f4; color:#64748b; }
   .b-question { background:#fdecec; color:#d93c3c; }
+  .b-resolved { background:#e7f7ee; color:#14824c; }
+  .b-unresolved { background:#fef3c7; color:#b45309; }
   .op { display:flex; gap:5px; flex-wrap:wrap; }
   .op button { border:none; border-radius:6px; padding:5px 9px; font-size:12px; cursor:pointer; background:#f1f5f9; color:#334155; }
   .op button.r { background:#fdecec; color:#d93c3c; }
@@ -89,8 +91,31 @@
   .err { color:#d93c3c; font-size:13px; margin-top:8px; display:none; }
   .toast { position:fixed; left:50%; bottom:40px; transform:translateX(-50%); background:rgba(17,24,39,.88); color:#fff; padding:9px 18px; border-radius:8px; font-size:13px; z-index:120; display:none; }
   .footer { text-align:center; color:#9ca3af; font-size:12px; padding:16px 0 24px; }
-  .workers { font-size:13px; color:#475569; }
+  .workers { font-size:13px; color:#475569; line-height:2; }
   .workers span { display:inline-block; background:#f1f5f9; border-radius:6px; padding:3px 9px; margin:3px 4px 0 0; }
+  /* Tab 导航 */
+  .tabbar { background:#fff; display:flex; gap:0; border-bottom:2px solid #eef2f7; position:sticky; top:52px; z-index:40; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .tabbar::-webkit-scrollbar { display:none; }
+  .tab { padding:13px 22px; font-size:14px; font-weight:600; color:#64748b; cursor:pointer; white-space:nowrap; border-bottom:3px solid transparent; transition:all .2s; flex-shrink:0; }
+  .tab:hover { color:#0d3b6e; }
+  .tab.active { color:#0d3b6e; border-bottom-color:#0d3b6e; background:#f8faff; }
+  .tab .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#d93c3c; margin-left:2px; vertical-align:middle; display:none; }
+  .tab .dot.show { display:inline-block; }
+  .tab-page { display:none; }
+  .tab-page.active { display:block; }
+  .section-title { font-size:14px; font-weight:700; color:#0d3b6e; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eef2f7; }
+  .info-box { background:#f0f7ff; border:1px solid #c7dbf3; border-radius:10px; padding:14px 16px; font-size:13px; color:#1e3a5f; line-height:1.6; margin-bottom:14px; }
+  .info-box b { color:#0d3b6e; }
+  .help-list { padding-left:18px; font-size:13px; color:#475569; line-height:2; }
+  .help-list li { margin:4px 0; }
+  .fb-card { background:#fff; border-radius:10px; padding:14px 16px; margin-bottom:10px; border-left:3px solid #e5e7eb; box-shadow:0 1px 3px rgba(16,42,84,.06); }
+  .fb-card.done { border-left-color:#14824c; }
+  .fb-card .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px; }
+  .fb-card .name { font-weight:700; font-size:14px; color:#111827; }
+  .fb-card .meta { font-size:12px; color:#94a3b8; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .fb-card .tag { font-size:12px; font-weight:600; padding:2px 10px; border-radius:20px; }
+  .fb-card .tag.todo { background:#fef3c7; color:#b45309; }
+  .fb-card .tag.done { background:#e7f7ee; color:#14824c; }
   @media (max-width:640px){
     .desktop-table { display:none; }
     .mobile-table { display:table; }
@@ -126,78 +151,118 @@
     <button class="logout" id="btnLogout">退出</button>
   </div>
 
+  <!-- Tab 导航 -->
+  <div class="tabbar">
+    <div class="tab active" data-tab="overview">账期总览</div>
+    <div class="tab" data-tab="detail">明细管理</div>
+    <div class="tab" data-tab="feedback">异议反馈<span class="dot" id="fbDot"></span></div>
+    <div class="tab" data-tab="settings">系统设置</div>
+  </div>
+
   <div class="container">
-    <!-- 统计 -->
-    <div class="stat-grid">
-      <div class="stat"><div class="num" id="stTotal">0</div><div class="lab">工资记录</div></div>
-      <div class="stat p"><div class="num" id="stPending">0</div><div class="lab">待确认</div></div>
-      <div class="stat"><div class="num" id="stConfirmed">0</div><div class="lab">已确认</div></div>
-      <div class="stat q"><div class="num" id="stQuestion">0</div><div class="lab">有疑问</div></div>
-      <div class="stat"><div class="num" id="stWorkers">0</div><div class="lab">装维员</div></div>
-    </div>
-
-    <!-- 上传工资 -->
-    <div class="card">
-      <h2>上传工资明细<span class="tag" id="monthTag"></span></h2>
-      <div class="upload-area" id="uploadArea">
-        <div class="big">+</div>
-        <div class="txt">点击选择 Excel / CSV 文件（工号、姓名、月份为必含列）</div>
-        <div class="muted" style="margin-top:6px">支持 .xlsx / .xls / .csv，其余列自动作为工资明细项</div>
+    <!-- ===== Tab1: 账期总览 ===== -->
+    <div class="tab-page active" data-page="overview">
+      <div class="stat-grid">
+        <div class="stat"><div class="num" id="stTotal">0</div><div class="lab">工资记录</div></div>
+        <div class="stat p"><div class="num" id="stPending">0</div><div class="lab">待确认</div></div>
+        <div class="stat"><div class="num" id="stConfirmed">0</div><div class="lab">已确认</div></div>
+        <div class="stat q"><div class="num" id="stQuestion">0</div><div class="lab">有疑问</div></div>
+        <div class="stat"><div class="num" id="stWorkers">0</div><div class="lab">装维员</div></div>
       </div>
-      <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv">
-      <div id="previewBox" class="preview-box" style="display:none"></div>
-      <div id="uploadBtnRow" style="display:none;margin-top:12px">
-        <button class="btn btn-s" id="btnUpload">确认上传</button>
-        <button class="btn btn-o" id="btnCancelUpload" style="margin-left:8px">取消</button>
-      </div>
-      <div class="muted" style="margin-top:10px">
-        识别规则：工号列（工号/编号）、姓名列（姓名）、月份列（月份，如 2026-09）、合计列（总额/合计/实发/应发）。<br>
-        未识别到合计列时，系统自动把数字列求和作为总额。重复上传同一记录会自动跳过。
-      </div>
-    </div>
-
-    <!-- 记录列表 -->
-    <div class="card">
-      <div class="toolbar">
-        <h2 style="margin:0">工资记录</h2>
-        <div class="search-inline">
-          <select id="fMonth"><option value="">全部月份</option></select>
-          <select id="fStatus">
-            <option value="">全部状态</option>
-            <option value="pending">待确认</option>
-            <option value="confirmed">已确认</option>
-            <option value="auto_confirmed">已自动确认</option>
-            <option value="question">有疑问</option>
-          </select>
-          <button class="btn btn-o" id="btnExport">导出台账</button>
+      <div class="card">
+        <h2>上传工资明细<span class="tag" id="monthTag"></span></h2>
+        <div class="upload-area" id="uploadArea">
+          <div class="big">+</div>
+          <div class="txt">点击选择 Excel / CSV 文件（工号、姓名、月份为必含列）</div>
+          <div class="muted" style="margin-top:6px">支持 .xlsx / .xls / .csv，其余列自动作为工资明细项</div>
+        </div>
+        <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv">
+        <div id="previewBox" class="preview-box" style="display:none"></div>
+        <div id="uploadBtnRow" style="display:none;margin-top:12px">
+          <button class="btn btn-s" id="btnUpload">确认上传</button>
+          <button class="btn btn-o" id="btnCancelUpload" style="margin-left:8px">取消</button>
+        </div>
+        <div class="muted" style="margin-top:10px">
+          识别规则：工号列（工号/编号）、姓名列（姓名）、月份列（月份，如 2026-09）、合计列（总额/合计/实发/应发）。<br>
+          未识别到合计列时，系统自动把数字列求和作为总额。重复上传同一记录会自动跳过。
         </div>
       </div>
-      <table class="desktop-table">
-        <thead><tr>
-          <th>月份</th><th>工号</th><th>姓名</th><th>总额</th><th>状态</th><th>反馈/回复</th><th>操作</th>
-        </tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-      <div class="mobile-table" id="mbody"></div>
-      <div id="listEmpty" class="empty" style="display:none">暂无记录，请先上传工资明细</div>
     </div>
 
-    <!-- 装维员账号 -->
-    <div class="card">
-      <h2>装维员账号<span class="tag">自动创建</span></h2>
-      <div class="workers" id="workerList">加载中...</div>
-      <div class="muted" style="margin-top:8px">装维员账号由系统根据上传的工号+姓名自动创建，无需手工维护。</div>
-    </div>
-
-    <!-- 修改口令 -->
-    <div class="card">
-      <h2>修改管理口令</h2>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <input type="password" id="oldPin" placeholder="当前口令" style="flex:1;min-width:120px;padding:9px;border:1px solid #d1d9e6;border-radius:8px">
-        <input type="password" id="newPin" placeholder="新口令（至少4位）" style="flex:1;min-width:140px;padding:9px;border:1px solid #d1d9e6;border-radius:8px">
-        <button class="btn btn-p" id="btnChpw">修改</button>
+    <!-- ===== Tab2: 明细管理 ===== -->
+    <div class="tab-page" data-page="detail">
+      <div class="card">
+        <div class="toolbar">
+          <div class="search-inline">
+            <input id="fSearch" type="text" placeholder="搜索工号/姓名" style="padding:8px 10px;border:1px solid #d1d9e6;border-radius:8px;font-size:13px;width:140px;background:#fff">
+            <select id="fMonth"><option value="">全部月份</option></select>
+            <select id="fStatus">
+              <option value="">全部状态</option>
+              <option value="confirmed">已确认</option>
+              <option value="pending">待确认</option>
+              <option value="question">有疑问</option>
+            </select>
+          </div>
+          <button class="btn btn-o" id="btnExport">导出台账</button>
+        </div>
+        <table class="desktop-table">
+          <thead><tr>
+            <th style="width:11%">月份</th><th style="width:12%">工号</th><th style="width:11%">姓名</th><th style="width:11%">总额</th><th style="width:11%">状态</th><th style="width:18%">确认时间</th><th style="width:26%">操作</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="mobile-table" id="mbody"></div>
+        <div id="listEmpty" class="empty" style="display:none">暂无记录，请先上传工资明细</div>
       </div>
-      <div class="muted" style="margin-top:8px">建议使用与工单系统不同的口令，并妥善保管。</div>
+    </div>
+
+    <!-- ===== Tab3: 异议反馈 ===== -->
+    <div class="tab-page" data-page="feedback">
+      <div class="card">
+        <div class="toolbar">
+          <h2 style="margin:0">异议反馈</h2>
+          <div class="search-inline">
+            <select id="fbMonth"><option value="">全部月份</option></select>
+            <select id="fbStatus2"><option value="unresolved">待处理</option><option value="">全部状态</option><option value="resolved">已完成</option></select>
+            <button class="btn btn-o" id="btnExportFb">导出异议清单</button>
+          </div>
+        </div>
+        <div id="fbList"></div>
+        <div id="fbEmpty" class="empty" style="display:none">暂无异议反馈，状态良好</div>
+      </div>
+    </div>
+
+    <!-- ===== Tab4: 系统设置 ===== -->
+    <div class="tab-page" data-page="settings">
+      <div class="card">
+        <div class="section-title">自动确认规则</div>
+        <div class="info-box">
+          员工超过 <b>3 天</b> 未确认的工资记录，系统将自动确认。<br>
+          此规则由数据库端执行，确保即使员工不登录也能按时确认。
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">修改管理口令</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <input type="password" id="oldPin" placeholder="当前口令" style="flex:1;min-width:120px;padding:9px;border:1px solid #d1d9e6;border-radius:8px">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <input type="password" id="newPin" placeholder="新口令（至少4位）" style="flex:1;min-width:140px;padding:9px;border:1px solid #d1d9e6;border-radius:8px">
+          <button class="btn btn-p" id="btnChpw">修改</button>
+        </div>
+
+      </div>
+      <div class="card">
+        <div class="section-title">使用说明</div>
+        <ol class="help-list">
+          <li>每月发绩效前，在「账期总览」上传工资 Excel，系统自动创建工资记录。</li>
+          <li>装维员在手机端凭工号+姓名登录，查看本人明细并确认；有疑问可提交异议。</li>
+          <li>超过 3 天未确认的记录，系统自动确认。</li>
+          <li>在「明细管理」可查看进度、搜索、线下核实后手动标记确认、导出留档。</li>
+          <li>在「异议反馈」集中处理员工的疑问，回复后员工可在手机端查看。</li>
+          <li>在「系统设置」可修改管理口令。</li>
+        </ol>
+      </div>
     </div>
 
     <div class="footer">装维绩效反馈系统 · 数据存储于云端数据库 · 员工3天未确认自动确认</div>
@@ -250,7 +315,22 @@ var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 
 var adminPin = '';
 var currentList = [];
+var allList = [];
 var pendingUpload = null; // {rows, workerNoKey, nameKey, monthKey, totalKey, extraKeys}
+
+// ---------- Tab 切换 ----------
+var _tabs = document.querySelectorAll('.tab');
+var _pages = document.querySelectorAll('.tab-page');
+_tabs.forEach(function(tab){
+  tab.onclick = function(){
+    var name = tab.dataset.tab;
+    _tabs.forEach(function(t){ t.classList.remove('active'); });
+    _pages.forEach(function(p){ p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.querySelector('.tab-page[data-page="' + name + '"]').classList.add('active');
+    if (name === 'feedback') renderFeedbackList();
+  };
+});
 
 function $(id){ return document.getElementById(id); }
 function toast(msg){
@@ -280,7 +360,7 @@ function fmtDate(iso){
 }
 
 function badge(s){
-  var m = { pending:['待确认','b-pending'], confirmed:['已确认','b-confirmed'], auto_confirmed:['已自动确认','b-auto'], question:['有疑问','b-question'] };
+  var m = { pending:['待确认','b-pending'], confirmed:['已确认','b-confirmed'], auto_confirmed:['已确认','b-confirmed'], question:['有疑问','b-question'] };
   var x = m[s] || [s,'b-auto'];
   return '<span class="badge ' + x[1] + '">' + x[0] + '</span>';
 }
@@ -306,7 +386,6 @@ function enterMain(){
   $('mainView').style.display = 'block';
   loadStats();
   loadList();
-  loadWorkers();
   loadMonths();
 }
 $('btnLogout').onclick = function(){
@@ -325,24 +404,24 @@ function loadStats(){
       if (!s || !s.total && !s.workers) return;
       $('stTotal').textContent = s.total || 0;
       $('stPending').textContent = s.pending || 0;
-      $('stConfirmed').textContent = s.confirmed || 0;
+      $('stConfirmed').textContent = (s.confirmed || 0) + (s.auto_confirmed || 0);
       $('stQuestion').textContent = s.question || 0;
       $('stWorkers').textContent = s.workers || 0;
+      var dot = $('fbDot');
+      if (s.question > 0) dot.classList.add('show'); else dot.classList.remove('show');
     }).catch(function(){});
 }
 
 function loadMonths(){
   rpc('jx_admin_stats', { p_pin: adminPin })
     .then(function(s){
-      var sel = $('fMonth');
-      var cur = sel.value;
-      sel.innerHTML = '<option value="">全部月份</option>';
-      (s.months || []).forEach(function(m){
-        var o = document.createElement('option');
-        o.value = m; o.textContent = m + ' 月';
-        sel.appendChild(o);
-      });
-      sel.value = cur;
+      var html = '<option value="">全部月份</option>';
+      (s.months || []).forEach(function(m){ html += '<option value="' + m + '">' + m + ' 月</option>'; });
+      var cur1 = $('fMonth').value, cur2 = $('fbMonth').value;
+      $('fMonth').innerHTML = html;
+      $('fbMonth').innerHTML = html;
+      $('fMonth').value = cur1;
+      $('fbMonth').value = cur2;
     }).catch(function(){});
 }
 
@@ -352,20 +431,30 @@ async function loadList(){
   var status = $('fStatus').value || null;
   var rows;
   try {
-    rows = await rpc('jx_admin_list', { p_pin: adminPin, p_month: month, p_status: status });
+    if (status === 'confirmed') {
+      rows = await rpc('jx_admin_list', { p_pin: adminPin, p_month: month });
+      rows = (rows || []).filter(function(r){ return r.status === 'confirmed' || r.status === 'auto_confirmed'; });
+    } else {
+      rows = await rpc('jx_admin_list', { p_pin: adminPin, p_month: month, p_status: status });
+    }
   } catch(e){ toast('加载失败：' + e.message); return; }
   rows = rows || [];
+  allList = rows;
+  renderList();
+}
+
+function renderList(){
+  var kw = ($('fSearch').value || '').trim().toLowerCase();
+  var rows = allList.filter(function(r){
+    if (!kw) return true;
+    return (r.worker_no && r.worker_no.toLowerCase().indexOf(kw) >= 0) || (r.name && r.name.toLowerCase().indexOf(kw) >= 0);
+  });
   currentList = rows;
   var tb = $('tbody'), mb = $('mbody');
   tb.innerHTML = ''; mb.innerHTML = '';
   $('listEmpty').style.display = rows.length ? 'none' : 'block';
   if (!rows.length) return;
   rows.forEach(function(r){
-    var fb = '';
-    if (r.feedback) {
-      fb = '<div class="fb-text">反馈：' + r.feedback + '</div>';
-      if (r.reply) fb += '<div class="reply-text">回复：' + r.reply + '</div>';
-    }
     var op = '<div class="op">' +
       '<button class="b" onclick="showDetail(' + r.id + ')">明细</button>' +
       (r.status === 'question' ? '<button class="g" onclick="openReply(' + r.id + ')">回复</button>' : '') +
@@ -378,19 +467,21 @@ async function loadList(){
       '<td>' + r.name + '</td>' +
       '<td>' + (r.total !== null ? r.total : '-') + '</td>' +
       '<td>' + badge(r.status) + '</td>' +
-      '<td>' + fb + '</td>' +
+      '<td style="font-size:12px;color:#6b7280">' + fmtDate(r.confirm_time) + '</td>' +
       '<td>' + op + '</td>' +
     '</tr>';
     mb.innerHTML += '<div class="mobile-card">' +
       '<div class="row"><span class="k">' + r.month + '月 · ' + r.name + '（' + r.worker_no + '）</span>' + badge(r.status) + '</div>' +
       '<div class="row"><span class="k">总额</span><span class="v">¥ ' + (r.total !== null ? r.total : '-') + '</span></div>' +
-      fb + op +
+      '<div class="row"><span class="k">确认时间</span><span class="v" style="font-size:12px">' + fmtDate(r.confirm_time) + '</span></div>' +
+      op +
     '</div>';
   });
 }
 
 $('fMonth').onchange = loadList;
 $('fStatus').onchange = loadList;
+$('fSearch').oninput = renderList;
 
 function showDetail(id){
   var r = currentList.find(function(x){ return x.id === id; });
@@ -400,7 +491,16 @@ function showDetail(id){
   keys.forEach(function(k){ body += '<div class="dl"><span class="dk">' + k + '</span><span class="dv">' + r.items[k] + '</span></div>'; });
   body += '<div class="dl"><span class="dk">上传时间</span><span class="dv">' + fmtDate(r.created_at) + '</span></div>' +
           '<div class="dl"><span class="dk">确认时间</span><span class="dv">' + fmtDate(r.confirm_time) + '</span></div>' +
+          '<div class="dl"><span class="dk">确认方式</span><span class="dv">' + (r.status === 'auto_confirmed' ? '自动确认' : '手动确认') + '</span></div>' +
           '<div class="dl"><span class="dk">批次</span><span class="dv">' + (r.batch_id || '-') + '</span></div>';
+  if (r.feedback) {
+    body += '<div class="dl"><span class="dk">员工反馈</span><span class="dv" style="color:#7f1d1d">' + r.feedback + '</span></div>' +
+            '<div class="dl"><span class="dk">反馈时间</span><span class="dv">' + fmtDate(r.feedback_time) + '</span></div>';
+  }
+  if (r.reply) {
+    body += '<div class="dl"><span class="dk">管理员回复</span><span class="dv" style="color:#78350f">' + r.reply + '</span></div>' +
+            '<div class="dl"><span class="dk">回复时间</span><span class="dv">' + fmtDate(r.reply_time) + '</span></div>';
+  }
   $('detailTitle').textContent = r.month + '月 · ' + r.name + ' 工资明细（¥' + (r.total !== null ? r.total : '-') + '）';
   $('detailBody').innerHTML = body;
   $('detailModal').style.display = 'flex';
@@ -548,15 +648,19 @@ function renderPreview(mapped, rows){
   }
   mapped.items = items;
   // 渲染预览表
-  var head = '<tr><th>#</th><th>工号</th><th>姓名</th><th>月份</th><th>总额</th></tr>';
+  var cols = ['<th style="width:30px">#</th><th>工号</th><th>姓名</th><th>月份</th>'];
+  extraKeys.forEach(function(k){ cols.push('<th>' + k + '</th>'); });
+  cols.push('<th>总额</th>');
+  var head = '<tr>' + cols.join('') + '</tr>';
   var body = '';
-  var show = items.slice(0, 5);
-  show.forEach(function(x, i){
-    body += '<tr><td>' + (i+1) + '</td><td>' + x.worker_no + '</td><td>' + x.name + '</td><td>' + x.month + '</td><td>' + x.total + '</td></tr>';
+  items.forEach(function(x, i){
+    var tds = '<td>' + (i+1) + '</td><td>' + x.worker_no + '</td><td>' + x.name + '</td><td>' + x.month + '</td>';
+    extraKeys.forEach(function(k){ tds += '<td>' + (x.items[k] !== null ? x.items[k] : '-') + '</td>'; });
+    tds += '<td style="font-weight:700;color:#0d3b6e">' + (x.total !== null ? x.total : '-') + '</td>';
+    body += '<tr>' + tds + '</tr>';
   });
-  if (items.length > 5) body += '<tr><td colspan="5" class="muted">… 共 ' + items.length + ' 条，前 5 条预览</td></tr>';
-  $('previewBox').innerHTML = '<b>解析结果预览（' + items.length + ' 条）</b><table>' + head + body + '</table>' +
-    '<div class="muted" style="margin-top:8px">工资项列：' + (extraKeys.join('、') || '无（只有基础列）') + '</div>';
+  $('previewBox').innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>预览（共 ' + items.length + ' 条）</b><span class="muted">确认无误后点击上传</span></div>' +
+    '<div style="max-height:300px;overflow-y:auto;border:1px solid #eef2f7;border-radius:6px"><table>' + head + body + '</table></div>';
   $('previewBox').style.display = 'block';
   $('uploadBtnRow').style.display = 'block';
 }
@@ -577,7 +681,7 @@ $('btnUpload').onclick = function(){
       if (res && res.ok) {
         toast('上传成功：新增 ' + res.inserted + ' 条，跳过重复 ' + res.skipped + ' 条');
         $('btnCancelUpload').click();
-        loadList(); loadStats(); loadWorkers(); loadMonths();
+        loadList(); loadStats(); loadMonths();
       } else {
         toast('上传失败：' + (res && res.msg ? res.msg : ''));
       }
@@ -657,8 +761,60 @@ $('btnExport').onclick = function(){
   XLSX.writeFile(wb, '工资绩效台账_' + new Date().toISOString().slice(0, 10) + '.xlsx');
 };
 function statusText(s){
-  return { pending: '待确认', confirmed: '已确认', auto_confirmed: '已自动确认', question: '有疑问' }[s] || s;
+  return { pending: '待确认', confirmed: '已确认', auto_confirmed: '已确认', question: '有疑问' }[s] || s;
 }
+
+// ---------- 异议反馈列表 ----------
+function renderFeedbackList(){
+  var month = $('fbMonth').value || null;
+  var st = $('fbStatus2').value || null;
+  var all = currentList.filter(function(r){ return r.feedback; });
+  if (month) all = all.filter(function(r){ return r.month === month; });
+  if (st === 'unresolved') all = all.filter(function(r){ return !r.reply; });
+  if (st === 'resolved') all = all.filter(function(r){ return !!r.reply; });
+  var box = $('fbList'), empty = $('fbEmpty');
+  if (!all.length) { box.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  box.innerHTML = all.map(function(r){
+    var resolved = !!r.reply;
+    var stTag = resolved ? '<span class="tag done">已完成</span>' : '<span class="tag todo">待处理</span>';
+    var html = '<div class="fb-card' + (resolved ? ' done' : '') + '">' +
+      '<div class="head">' +
+        '<span class="name">' + r.name + '（' + r.worker_no + '）</span>' +
+        '<span class="meta">' + r.month + '月 · ¥' + (r.total !== null ? r.total : '-') + ' · ' + fmtDate(r.feedback_time) + ' ' + stTag + '</span>' +
+      '</div>' +
+      '<div class="fb-text">' + (r.feedback || '') + '</div>';
+    if (r.reply) html += '<div class="reply-text">' + r.reply + '（' + fmtDate(r.reply_time) + '）</div>';
+    html += '<div class="op" style="margin-top:8px">' +
+      '<button class="b" onclick="showDetail(' + r.id + ')">明细</button>' +
+      '<button class="g" onclick="openReply(' + r.id + ')">' + (r.reply ? '修改回复' : '回复') + '</button>' +
+    '</div></div>';
+    return html;
+  }).join('');
+}
+$('fbMonth').onchange = renderFeedbackList;
+$('fbStatus2').onchange = renderFeedbackList;
+
+// ---------- 导出异议清单 ----------
+$('btnExportFb').onclick = function(){
+  var month = $('fbMonth').value || null;
+  var all = currentList.filter(function(r){ return r.feedback; });
+  if (month) all = all.filter(function(r){ return r.month === month; });
+  if (!all.length) { toast('暂无异议数据可导出'); return; }
+  if (!ensureXlsx()) { toast('导出组件加载中，请稍后再试'); return; }
+  var arr = all.map(function(r){
+    return {
+      月份: r.month, 工号: r.worker_no, 姓名: r.name, 总额: r.total,
+      状态: r.reply ? '已完成' : '待处理',
+      反馈内容: r.feedback || '', 反馈时间: fmtDate(r.feedback_time),
+      管理员回复: r.reply || '', 回复时间: fmtDate(r.reply_time)
+    };
+  });
+  var ws = XLSX.utils.json_to_sheet(arr);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '异议清单');
+  XLSX.writeFile(wb, '异议反馈清单_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+};
 </script>
 </body>
 </html>
